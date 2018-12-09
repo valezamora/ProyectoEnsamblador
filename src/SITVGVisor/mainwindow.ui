@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>619</width>
-    <height>368</height>
+    <width>620</width>
+    <height>542</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,13 +16,82 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_6">
+      <item>
+       <widget class="QLabel" name="label_7">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Imagen por transformar:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="fileNameLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>ninguna</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="viewBaseButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Ver imagen</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="changeFileButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Cambiar imagen</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
      <layout class="QHBoxLayout" name="horizontalLayout_5">
       <item>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QLabel" name="label_4">
           <property name="text">
-           <string>Agrega las transformaciones que desees</string>
+           <string>Transformaciones disponibles:</string>
           </property>
          </widget>
         </item>
@@ -33,7 +102,7 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_4">
               <item>
-               <widget class="QRadioButton" name="radioButton_4">
+               <widget class="QRadioButton" name="reflectionSelect">
                 <property name="text">
                  <string>Reflexión</string>
                 </property>
@@ -57,7 +126,7 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_2">
               <item>
-               <widget class="QRadioButton" name="radioButton_3">
+               <widget class="QRadioButton" name="scalingSelect">
                 <property name="text">
                  <string>Escalación</string>
                 </property>
@@ -71,7 +140,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="lineEdit_2">
+               <widget class="QLineEdit" name="factorLineEdit">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -98,7 +167,7 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout">
               <item>
-               <widget class="QRadioButton" name="radioButton">
+               <widget class="QRadioButton" name="translationSelect">
                 <property name="text">
                  <string>Translación</string>
                 </property>
@@ -112,7 +181,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="lineEdit">
+               <widget class="QLineEdit" name="xLineEdit">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -129,7 +198,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="lineEdit_3">
+               <widget class="QLineEdit" name="yLineEdit">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -156,18 +225,30 @@
            </layout>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_2">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Agregar
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <widget class="QPushButton" name="addButton">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Agregar
 transformación</string>
-            </property>
-           </widget>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="cleanParamButton">
+              <property name="text">
+               <string>Limpiar
+parámetros</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </item>
@@ -202,13 +283,20 @@ transformación</string>
      </layout>
     </item>
     <item>
+     <widget class="Line" name="line_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QLabel" name="label_6">
       <property name="text">
        <string/>
       </property>
      </widget>
     </item>
-    <item alignment="Qt::AlignHCenter">
+    <item>
      <widget class="QLabel" name="label_3">
       <property name="text">
        <string>Transformaciones por aplicar:</string>
@@ -216,53 +304,129 @@ transformación</string>
      </widget>
     </item>
     <item>
-     <widget class="QListWidget" name="listWidget"/>
+     <widget class="QListView" name="listView"/>
     </item>
     <item>
-     <widget class="QPushButton" name="pushButton">
-      <property name="text">
-       <string>Aplicar transformaciones</string>
-      </property>
-     </widget>
+     <layout class="QHBoxLayout" name="horizontalLayout_8">
+      <item>
+       <spacer name="horizontalSpacer_6">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="cleanListButton">
+        <property name="text">
+         <string>Limpiar cola de transformaciones</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_9">
+      <item>
+       <spacer name="horizontalSpacer_9">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="applyButton">
+        <property name="text">
+         <string>Aplicar transformaciones</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_7">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_10">
+      <item>
+       <spacer name="horizontalSpacer_10">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="viewTransButtom">
+        <property name="text">
+         <string>Ver imagen transformada</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="saveButton">
+        <property name="text">
+         <string>Guardar imagen transformada</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_11">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-  </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>619</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuSITVG_Viewer">
-    <property name="title">
-     <string>&amp;File</string>
-    </property>
-    <addaction name="separator"/>
-    <addaction name="actionChange_file"/>
-    <addaction name="separator"/>
-    <addaction name="actionExit"/>
-   </widget>
-   <widget class="QMenu" name="menuHelp">
-    <property name="title">
-     <string>&amp;Help</string>
-    </property>
-    <addaction name="actionWindow_help"/>
-   </widget>
-   <addaction name="menuSITVG_Viewer"/>
-   <addaction name="menuHelp"/>
-  </widget>
   <action name="actionOpen_File">
    <property name="text">
     <string>Open file</string>
@@ -293,12 +457,32 @@ transformación</string>
   </action>
   <action name="actionWindow_help">
    <property name="text">
-    <string>Window help</string>
+    <string>Ayuda</string>
    </property>
   </action>
   <action name="actionChange_file">
    <property name="text">
     <string>Change file</string>
+   </property>
+  </action>
+  <action name="actionCambiar_archivo">
+   <property name="text">
+    <string>Cambiar archivo</string>
+   </property>
+  </action>
+  <action name="actionSalir">
+   <property name="text">
+    <string>Salir</string>
+   </property>
+  </action>
+  <action name="actionAyuda">
+   <property name="text">
+    <string>Ayuda</string>
+   </property>
+  </action>
+  <action name="actionVolver_al_men_principal">
+   <property name="text">
+    <string>Volver al menú principal</string>
    </property>
   </action>
  </widget>

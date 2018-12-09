@@ -6,10 +6,10 @@
  (Entre paréntesis se representan los tipos de datos que serán
  usados para maniplar cada cantidad.)
 
-  ==========================================================================
+()==========================================================================()
 ||																			||
 || 		Nombre del archivo por crear, sin espacios |						||
-|| 		Cantidad de figuras (32-uint) | Color de fondo RGB (3x 8-uint) |	||
+|| 		Cantidad de figuras (32-uint) |                                 	||
 || 		Largo de la imagen (32-float) | Alto de la imagen (32-float) |		||
 || 		Color figura 1 (3x 8-uint) | Grosor figura 1 (16-uint) |			||
 || 		Cantidad de vértices figura 1 (16-int) |							||
@@ -31,7 +31,7 @@
 ||		...																	||
 ||		Xn figura m (32-float) | Yn figura m (32-float) |					||
 ||																			||
-  ==========================================================================
+()==========================================================================()
 
 */
 
@@ -53,6 +53,7 @@ int main ()
 	byte colorBytes [3] = {0, 0, 0};
 	unsigned short thickness;
 
+    std::cout << "Filename: ";
 
 	// Read sitvg file name
 	std::cin >> fileName;
@@ -61,17 +62,21 @@ int main ()
     if (fileName.find(".sitvg", fileName.length() - 6 - 1) == std::string::npos)
 	{
 		fileName += ".sitvg";
-	}
+        std::cout << "[.sitvg]\n\n";
+    }
 
 	// Create new file
 	std::ofstream newFile (fileName, std::ofstream::out | std::ofstream::binary);
 
+    std::cout << "Figure quantity: ";
 	// Read and store figures quantity
-	std::cin >> figureQuantity;
+    std::cin >> figureQuantity;
 
 	// Write figures quantity to sitvg file
 	newFile.write((char*) &figureQuantity, sizeof(unsigned));
 
+
+    std::cout << "Img size (x and y): ";
 	// Read and write length and height
 	std::cin >> x >> y;
 	newFile.write((char*) &x, sizeof(float));
@@ -80,27 +85,40 @@ int main ()
 	// For every figure:
 	for (unsigned fig = 0; fig < figureQuantity; ++fig)
 	{
+        std::cout << "\nFigure number " << fig+1 << ":\n";
+
+        std::cout << "\tColor: ";
 		// Read and write figure's color and figure's line thickness
-		std::cin >> colors[0] >> colors[1] >> colors[2] >> thickness;
+        std::cin >> colors[0] >> colors[1] >> colors[2];
         colorBytes[0] = (byte) colors[0]; colorBytes[1] = (byte) colors[1]; colorBytes[2] = (byte) colors[2];
 		newFile.write((char*) colorBytes, 3 * sizeof(byte));
+
+        std::cout << "\tLine thickness: ";
+        // Read and write figure's color and figure's line thickness
+        std::cin >> thickness;
 		newFile.write((char*) &thickness, sizeof(unsigned short));
 
+        std::cout << "\tAmount of vertices: ";
 		// Read and store the figure's vertex amount
 		std::cin >> vertexAmount;
 
 		// Write the figure's vertex amount
 		newFile.write((char*) &vertexAmount, sizeof (short));
 
+        if (vertexAmount < 0) vertexAmount *= -1;
+
 		// For every vertex in the figure:
 		for (short vert = 0; vert < vertexAmount; ++vert)
 		{
+            std::cout << "\tVertex " << vert+1 << " coordinates: ";
 			// Read and write the vertex's coordinates
 			std::cin >> x >> y;
 			newFile.write((char*) &x, sizeof(float));
 			newFile.write((char*) &y, sizeof(float));
 		}
 	}
+
+    std::cout << "\nFinished creating " << fileName << "\n\n" ;
 
 	// Close created file.
 	newFile.close();

@@ -9,14 +9,13 @@
 SITVGLoader::SITVGLoader()
 {}
 
-SITVGData SITVGLoader::readSitvgFile(const std::string filePath)
+SITVGData SITVGLoader::readSitvgFile(const std::string & filePath)
 {
     SITVGData data;
     std::ifstream file (filePath, std::ios_base::in | std::ios_base::binary);
     std::vector<Coordinates> coords;
 
     file.READ_ITEM(data.figuresAmount);
-    file.READ_ITEM(data.backgroundColor);
     file.READ_ITEM(data.width);
     file.READ_ITEM(data.height);
 
@@ -67,7 +66,6 @@ void SITVGLoader::writeSitvgFile(const std::string filePath, const SITVGData &da
     std::ofstream file (filePath, std::ios_base::out | std::ios_base::binary);
 
     file.WRITE_ITEM(data.figuresAmount);
-    file.WRITE_ITEM(data.backgroundColor);
     file.WRITE_ITEM(data.width);
     file.WRITE_ITEM(data.height);
 

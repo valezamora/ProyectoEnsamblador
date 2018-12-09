@@ -14,8 +14,6 @@ class SITVGData
   private:
     /// Amount of figures.
     unsigned figuresAmount = 0;
-    /// Color of the background.
-    RGBColor backgroundColor = RGBColor();
     /// X size of the image.
     float width = 1;
     /// Y size of the image.
@@ -52,18 +50,13 @@ class SITVGData
     /// Disabled copy assignment operator.
     SITVGData & operator= (const SITVGData & other) = delete;
 
-    /// Move assignmento operator.
+    /// Move assignment operator.
     SITVGData & operator= (SITVGData && other);
 
     /**
      * @brief Get method for the image's number of figures.
      */
     inline float getFigsAmount() const { return this->figuresAmount; }
-
-    /**
-     * @brief Get method for the image's background color.
-     */
-    inline const RGBColor getBGColor() const { return this->backgroundColor; }
 
     /**
      * @brief Get method for the image's width.
@@ -83,7 +76,7 @@ class SITVGData
     /**
      * @brief Get method for a figure's line thickness.
      */
-    inline const RGBColor thicknessAt (unsigned figureNo) const { return this->figsThicknesses[figureNo]; }
+    inline unsigned short thicknessAt (unsigned figureNo) const { return this->figsThicknesses[figureNo]; }
 
     /**
      * @brief Get method for a figure's number of vertices.
@@ -123,6 +116,12 @@ class SITVGData
      * in the image.
      */
     void setXsThenYs( const float * xsThenYsArray );
+
+    /**
+     * @brief Deletes all the data contained in the object, freeing dynamic memory.
+     */
+    void clear();
+
 };
 
 #endif // SITVGDATA_H

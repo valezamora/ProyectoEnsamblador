@@ -1,36 +1,28 @@
 #include "sitvgviewer.h"
 #include "ui_sitvgviewer.h"
 
-SITVGViewer::SITVGViewer(const SITVGData & imgData, const QString & windowTitle, QWidget *parent) :
+SITVGViewer::SITVGViewer(SITVGData && imgData, const QString & windowTitle, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::SITVGViewer),
-    imgData (imgData),
-    heightOverWidthRatio (imgData.getHeight() / imgData.getWidth())
+    imgData (std::move(imgData))
 {
     ui->setupUi(this);
     setWindowTitle(windowTitle);
-    ui->graphicsView->setScene(this->scene);
+    ui->graphicsView->setScene(&this->scene);
 
     this->paintSITVG();
 }
 
 SITVGViewer::~SITVGViewer()
 {
+    ui->graphicsView->hide();
+    //this->imgData.clear(); Automatically cleared
     delete ui;
 }
 
-int SITVGViewer::heightForWidth(int w) const
-{
-    return w * this->heightOverWidthRatio;
-}
-
-// Not ready.
+// Debería hacerla un thread aparte. ###############################################################################
 void SITVGViewer::paintSITVG()
 {
-    // Change background color. ##################################################################################
-
-    float scaleFactor = this->ui->graphicsView->width() / this->imgData.width;
-
     unsigned long long coordIndex = 0;
     short verticesAmount = 0;
     bool closedFig = false;
@@ -57,12 +49,14 @@ void SITVGViewer::paintSITVG()
         else
             closedFig = false;
 
-        firstX = scaleFactor * this->imgData.xAt(coordIndex);
-        firstY = scaleFactor * this->imgData.yAt(coordIndex++);
+        firstX = this->imgData.xAt(coordIndex);
+        firstY = this->imgData.yAt(coordIndex++);
 
         if (verticesAmount == 1)  // Draw dot
         {
-            this->scene.addLine(firstX, firstY, firstX, firstY, pen); // Fix... Might not draw dots. ################################################
+            this->scene.addLine(firstX - 1, firstY - 1, firstX+1, firstY+1, pen);
+            this->scene.addLine(firstX + 1, firstY - 1, firstX - 1, firstY + 1, pen);
+            // Fix... Might not draw dots. ##################################################################
         }
         else // Draw lines
         {
@@ -71,8 +65,8 @@ void SITVGViewer::paintSITVG()
 
             for (short ver = 1; ver < verticesAmount; ++ver)
             {
-                x2 = scaleFactor * this->imgData.xAt(coordIndex);
-                y2 = scaleFactor * this->imgData.yAt(coordIndex ++);
+                x2 = this->imgData.xAt(coordIndex);
+                y2 = this->imgData.yAt(coordIndex ++);
                 this->scene.addLine(x1, y1, x2, y2, pen);
 
                 x1 = x2;
@@ -86,7 +80,4 @@ void SITVGViewer::paintSITVG()
             }
         }
     }
-
-    // Update the UI? ##########################################################################################################
-
 }

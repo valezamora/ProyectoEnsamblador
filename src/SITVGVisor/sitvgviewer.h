@@ -5,6 +5,7 @@
 #include "sitvgdata.h"
 #include <QGraphicsView>
 #include <QGraphicsScene>
+#include <utility>
 
 namespace Ui {
 class SITVGViewer;
@@ -21,17 +22,13 @@ class SITVGViewer : public QWidget
     Q_OBJECT
 
   private:
-    const SITVGData & imgData;
-    const float heightOverWidthRatio;
-    QGraphicsScene scene;
     Ui::SITVGViewer *ui;
+    SITVGData imgData;
+    QGraphicsScene scene;
 
   public:
-    explicit SITVGViewer(const SITVGData & imgData, const QString &windowTitle, QWidget *parent = 0);
+    explicit SITVGViewer(SITVGData && imgData, const QString & windowTitle, QWidget *parent = 0);
     ~SITVGViewer();
-
-    /// Method used for mantaining the SITVG viewer aspect ratio.
-    int heightForWidth(int w) const override;
 
   private:
 

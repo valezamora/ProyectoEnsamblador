@@ -5,7 +5,6 @@ SITVGData::SITVGData()
 
 SITVGData::SITVGData (SITVGData && other):
     figuresAmount ( other.figuresAmount ),
-    backgroundColor ( other.backgroundColor ),
     width ( other.width ),
     height ( other.height ),
     figsColors ( other.figsColors ),
@@ -18,7 +17,6 @@ SITVGData::SITVGData (SITVGData && other):
 {
     // Destroy other.
     other.figuresAmount = 0;
-    other.backgroundColor = RGBColor();
     other.width = 1;
     other.height = 1;
     other.figsColors = nullptr;
@@ -32,18 +30,13 @@ SITVGData::SITVGData (SITVGData && other):
 
 SITVGData::~SITVGData()
 {
-    delete [] figsColors;
-    delete [] figsThicknesses;
-    delete [] figsVerticesAmounts;
-    delete [] xCoords;
-    delete [] yCoords;
+    this->clear();
 }
 
 SITVGData & SITVGData::operator= (SITVGData && other)
 {
-    // Copy all data.
+    // Copy (transfer) all data.
     this->figuresAmount = other.figuresAmount;
-    this->backgroundColor = other.backgroundColor;
     this->width = other.width;
     this->height = other.height;
     this->figsColors = other.figsColors;
@@ -53,9 +46,8 @@ SITVGData & SITVGData::operator= (SITVGData && other)
     this->xCoords = other.xCoords;
     this->yCoords = other.yCoords;
 
-    // Destroy other.
+    // Empty other.
     other.figuresAmount = 0;
-    other.backgroundColor = RGBColor();
     other.width = 1;
     other.height = 1;
     other.figsColors = nullptr;
@@ -74,7 +66,7 @@ float *SITVGData::getXsThenYsArray() const
     float * xArr = arr;
     float * yArr = arr + this->coordsAmount;
 
-    for (int index = 0; index < this->coordsAmount; ++ index)
+    for (unsigned long long index = 0; index < this->coordsAmount; ++ index)
     {
         xArr[index] = this->xCoords[index];
         yArr[index] = this->yCoords[index];
@@ -88,9 +80,18 @@ void SITVGData::setXsThenYs(const float *xsThenYsArray)
     const float * xArr = xsThenYsArray;
     const float * yArr = xsThenYsArray + this->coordsAmount;
 
-    for (int index = 0; index < this->coordsAmount; ++ index)
+    for (unsigned long long index = 0; index < this->coordsAmount; ++ index)
     {
         this->xCoords[index] = xArr[index];
         this->yCoords[index] = yArr[index];
     }
+}
+
+void SITVGData::clear()
+{
+    delete [] figsColors;
+    delete [] figsThicknesses;
+    delete [] figsVerticesAmounts;
+    delete [] xCoords;
+    delete [] yCoords;
 }
