@@ -38,8 +38,8 @@ class SITVGData
     /// Default constructor.
     SITVGData ();
 
-    /// Disabled copy constructor.
-    SITVGData (const SITVGData & other) = delete;
+    /// Copy constructor.
+    SITVGData (const SITVGData & other);
 
     /// Move constructor.
     SITVGData (SITVGData && other);

@@ -44,14 +44,14 @@ bool MainWindow::setInputFile()
             this->transImage = nullptr;
         }
 
-        SITVGData data = SITVGLoader::readSitvgFile(pathName.toUtf8().constData());
+        SITVGData data = std::move( SITVGLoader::readSitvgFile(pathName.toUtf8().constData()) );
 
         this->baseImage = new SITVGViewer( std::move(data), QString("Imagen inicial"), nullptr );
 
         // Show the filename in the label for it.
         ui->fileNameLabel->setText(pathName);
         enableAllInteractions();
-
+        //this->baseImage->show();
         return true;
     }
     else

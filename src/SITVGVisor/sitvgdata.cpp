@@ -3,6 +3,32 @@
 SITVGData::SITVGData()
 {}
 
+SITVGData::SITVGData (const SITVGData & other):
+    figuresAmount ( other.figuresAmount ),
+    width ( other.width ),
+    height ( other.height ),
+    figsColors ( new RGBColor[figuresAmount] ),
+    figsThicknesses ( new unsigned short[figuresAmount] ),
+    figsVerticesAmounts ( new short[figuresAmount] ),
+    coordsAmount ( other.coordsAmount ),
+    xCoords ( new float[coordsAmount] ),
+    yCoords ( new float[coordsAmount] )
+
+{
+    for (unsigned int fig = 0; fig < figuresAmount; ++fig)
+    {
+        figsColors[fig] = other.figsColors[fig];
+        figsThicknesses[fig] = other.figsThicknesses[fig];
+        figsVerticesAmounts[fig] = other.figsVerticesAmounts[fig];
+    }
+
+    for (unsigned long long coord = 0; coord < coordsAmount; ++coord)
+    {
+        xCoords[coord] = other.xCoords[coord];
+        yCoords[coord] = other.yCoords[coord];
+    }
+}
+
 SITVGData::SITVGData (SITVGData && other):
     figuresAmount ( other.figuresAmount ),
     width ( other.width ),
@@ -26,7 +52,6 @@ SITVGData::SITVGData (SITVGData && other):
     other.xCoords = nullptr;
     other.yCoords = nullptr;
 }
-
 
 SITVGData::~SITVGData()
 {

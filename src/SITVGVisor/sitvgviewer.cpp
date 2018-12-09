@@ -20,9 +20,26 @@ SITVGViewer::~SITVGViewer()
     delete ui;
 }
 
+SITVGViewer *SITVGViewer::newClone() const
+{
+    SITVGData imgDataClone = this->imgData;
+
+    return new SITVGViewer(std::move(imgDataClone), "Imagen transformada");
+
+
+}
+
+void SITVGViewer::applyTransformations(const float *xsThenYsArray)
+{
+    this->imgData.setXsThenYs(xsThenYsArray);
+    this->paintSITVG();
+}
+
 // Debería hacerla un thread aparte. ###############################################################################
 void SITVGViewer::paintSITVG()
 {
+    this->scene.clear();
+
     unsigned long long coordIndex = 0;
     short verticesAmount = 0;
     bool closedFig = false;
@@ -30,6 +47,13 @@ void SITVGViewer::paintSITVG()
     QPen pen;
 
     float x1 = 0, x2 = 0, y1 = 0, y2 = 0, firstX = 0, firstY = 0;
+
+    x1 = imgData.getWidth();
+    y1 = imgData.getHeight();
+
+    // Set the scene's size
+    ui->graphicsView->setSceneRect(0,0,x1,y1);
+    ui->graphicsView->setMaximumSize(x1+8, y1+8);
 
     for (unsigned fig = 0; fig < this->imgData.getFigsAmount(); ++fig )
     {

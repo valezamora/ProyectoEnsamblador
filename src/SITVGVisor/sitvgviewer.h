@@ -30,8 +30,20 @@ class SITVGViewer : public QWidget
     explicit SITVGViewer(SITVGData && imgData, const QString & windowTitle, QWidget *parent = 0);
     ~SITVGViewer();
 
-  private:
+    /**
+     * @brief Returns a pointer to a copy of the object.
+     * @remarks Returned object must be deallocated from dynamic memory.
+     */
+    SITVGViewer * newClone() const;
 
+    /**
+     * @brief Modifies the images data to assume the transformed coordinates
+     * in xsThenYsArray. For this, a copy of the array is used.
+     * @remarks The transformed array must be derived from this image's data.
+     */
+    void applyTransformations(const float * xsThenYsArray);
+
+  private:
     /**
      * @brief Paints the SITVG image to the scene
      */
