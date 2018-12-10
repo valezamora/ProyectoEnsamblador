@@ -5,6 +5,9 @@
 ;
 ;----------------------------------------------------------------
 
+global transfomarImagen
+
+
 section .data
 	cantX: db 0h		; cantidad en x
 	cantY: db 0h		; cantidad en y
@@ -16,6 +19,8 @@ section .bss
 
 
 section .text
+
+transfomarImagen:
 	;pila
 	push ebp
 	mov ebp, esp
