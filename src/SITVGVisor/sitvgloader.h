@@ -36,7 +36,7 @@ class SITVGLoader
      * @return SITVGData object with the read data.
      * @remarks The path must be valid, and the file must exist.
      */
-    static SITVGData readSitvgFile (const std::string filePath);
+    static SITVGData readSitvgFile (const std::string & filePath);
 
     /**
      * @brief Writes data of a SITVGData object to the file at filePath.

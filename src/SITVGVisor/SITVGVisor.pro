@@ -28,15 +28,21 @@ SOURCES += \
         mainwindow.cpp \
     sitvgloader.cpp \
     sitvgdata.cpp \
-    sitvgviewer.cpp
+    sitvgviewer.cpp \
+    transformationlist.cpp
 
 HEADERS += \
         mainwindow.h \
     sitvgloader.h \
     sitvgdata.h \
     rgbcolor.h \
-    sitvgviewer.h
+    sitvgviewer.h \
+    transformationlist.h \
+    transformation.h
 
 FORMS += \
         mainwindow.ui \
     sitvgviewer.ui
+
+DISTFILES += \
+    sitvgplanning.txt

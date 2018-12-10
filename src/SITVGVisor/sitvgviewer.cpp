@@ -1,35 +1,44 @@
 #include "sitvgviewer.h"
 #include "ui_sitvgviewer.h"
 
-SITVGViewer::SITVGViewer(const SITVGData & imgData, const QString & windowTitle, QWidget *parent) :
+SITVGViewer::SITVGViewer(SITVGData && imgData, const QString & windowTitle, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::SITVGViewer),
-    imgData (imgData),
-    heightOverWidthRatio (imgData.getHeight() / imgData.getWidth())
+    imgData (std::move(imgData))
 {
     ui->setupUi(this);
     setWindowTitle(windowTitle);
-    ui->graphicsView->setScene(this->scene);
+    ui->graphicsView->setScene(&this->scene);
 
     this->paintSITVG();
 }
 
 SITVGViewer::~SITVGViewer()
 {
+    ui->graphicsView->hide();
+    //this->imgData.clear(); Automatically cleared
     delete ui;
 }
 
-int SITVGViewer::heightForWidth(int w) const
+SITVGViewer *SITVGViewer::newClone() const
 {
-    return w * this->heightOverWidthRatio;
+    SITVGData imgDataClone = this->imgData;
+
+    return new SITVGViewer(std::move(imgDataClone), "Imagen transformada");
+
+
 }
 
-// Not ready.
+void SITVGViewer::applyTransformations(const float *xsThenYsArray)
+{
+    this->imgData.setXsThenYs(xsThenYsArray);
+    this->paintSITVG();
+}
+
+// Debería hacerla un thread aparte. ###############################################################################
 void SITVGViewer::paintSITVG()
 {
-    // Change background color. ##################################################################################
-
-    float scaleFactor = this->ui->graphicsView->width() / this->imgData.width;
+    this->scene.clear();
 
     unsigned long long coordIndex = 0;
     short verticesAmount = 0;
@@ -38,6 +47,13 @@ void SITVGViewer::paintSITVG()
     QPen pen;
 
     float x1 = 0, x2 = 0, y1 = 0, y2 = 0, firstX = 0, firstY = 0;
+
+    x1 = imgData.getWidth();
+    y1 = imgData.getHeight();
+
+    // Set the scene's size
+    ui->graphicsView->setSceneRect(0,0,x1,y1);
+    ui->graphicsView->setMaximumSize(x1+8, y1+8);
 
     for (unsigned fig = 0; fig < this->imgData.getFigsAmount(); ++fig )
     {
@@ -57,12 +73,14 @@ void SITVGViewer::paintSITVG()
         else
             closedFig = false;
 
-        firstX = scaleFactor * this->imgData.xAt(coordIndex);
-        firstY = scaleFactor * this->imgData.yAt(coordIndex++);
+        firstX = this->imgData.xAt(coordIndex);
+        firstY = this->imgData.yAt(coordIndex++);
 
         if (verticesAmount == 1)  // Draw dot
         {
-            this->scene.addLine(firstX, firstY, firstX, firstY, pen); // Fix... Might not draw dots. ################################################
+            this->scene.addLine(firstX - 1, firstY - 1, firstX+1, firstY+1, pen);
+            this->scene.addLine(firstX + 1, firstY - 1, firstX - 1, firstY + 1, pen);
+            // Fix... Might not draw dots. ##################################################################
         }
         else // Draw lines
         {
@@ -71,8 +89,8 @@ void SITVGViewer::paintSITVG()
 
             for (short ver = 1; ver < verticesAmount; ++ver)
             {
-                x2 = scaleFactor * this->imgData.xAt(coordIndex);
-                y2 = scaleFactor * this->imgData.yAt(coordIndex ++);
+                x2 = this->imgData.xAt(coordIndex);
+                y2 = this->imgData.yAt(coordIndex ++);
                 this->scene.addLine(x1, y1, x2, y2, pen);
 
                 x1 = x2;
@@ -86,7 +104,4 @@ void SITVGViewer::paintSITVG()
             }
         }
     }
-
-    // Update the UI? ##########################################################################################################
-
 }
