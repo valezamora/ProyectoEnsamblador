@@ -1,0 +1,1 @@
+void transfomarImagen(unsigned char * vectorTransformaciones, unsigned char * imagen);
