@@ -9,6 +9,49 @@ TransformationList::~TransformationList()
     this->transformations.clear();
 }
 
+void TransformationList::getDataForTransformation(int *&transformations, int &noOfTransformations) const
+{
+    const int intSize = 4;
+    const int rawParamSize = 8;
+
+    noOfTransformations = this->transformations.size();
+    transformations = new int [3*noOfTransformations];
+
+    int counter = 0;
+
+    for (int trans = 0; trans < noOfTransformations; ++trans)
+    {
+        // Copies the transformation id
+        memcpy(transformations + counter, &this->transformations[trans].id, intSize);
+        counter += intSize;
+
+        switch (this->transformations[trans].id)
+        {
+        case vectReflexion:
+            // Nothing else is copied.
+            counter += rawParamSize;
+            break;
+
+        case vectScaling:
+            memcpy(transformations + counter, &this->transformations[trans].dataOf.vScaling.scalePercent, intSize);
+            counter += rawParamSize;
+            break;
+
+        case vectTranslation:
+            memcpy(transformations + counter, &this->transformations[trans].dataOf.vTranslation.xTranslating, intSize);
+            counter += intSize;
+            memcpy(transformations + counter, &this->transformations[trans].dataOf.vTranslation.yTranslating, intSize);
+            counter += intSize;
+            break;
+
+            // Could include the other 3 transformations.
+
+        default:
+            break;
+        }
+    }
+}
+
 void TransformationList::clear()
 {
     beginRemoveRows(QModelIndex(), 0, transformations.size()-1);

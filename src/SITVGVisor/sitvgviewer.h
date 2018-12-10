@@ -37,9 +37,17 @@ class SITVGViewer : public QWidget
     SITVGViewer * newClone() const;
 
     /**
+     * @brief Gets the data of the image needed to transform its vertices.
+     * @param coordinates Pointer in which the coordinates vector is put.
+     * @param noOfCoordinates Unsigned integer in which the amount of coordinates is put.
+     */
+    void getDataForTransformation(float * & coordinates, unsigned & noOfCoordinates) const;
+
+    /**
      * @brief Modifies the images data to assume the transformed coordinates
      * in xsThenYsArray. For this, a copy of the array is used.
      * @remarks The transformed array must be derived from this image's data.
+     * It must also be deallocated from dynamic memory afterwards.
      */
     void applyTransformations(const float * xsThenYsArray);
 

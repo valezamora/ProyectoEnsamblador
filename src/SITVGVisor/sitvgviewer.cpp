@@ -16,17 +16,19 @@ SITVGViewer::SITVGViewer(SITVGData && imgData, const QString & windowTitle, QWid
 SITVGViewer::~SITVGViewer()
 {
     ui->graphicsView->hide();
-    //this->imgData.clear(); Automatically cleared
     delete ui;
 }
 
 SITVGViewer *SITVGViewer::newClone() const
 {
     SITVGData imgDataClone = this->imgData;
-
     return new SITVGViewer(std::move(imgDataClone), "Imagen transformada");
+}
 
-
+void SITVGViewer::getDataForTransformation(float *&coordinates, unsigned &noOfCoordinates) const
+{
+    coordinates = this->imgData.getXsThenYsArray();
+    noOfCoordinates = (unsigned) this->imgData.getCoordsAmount();
 }
 
 void SITVGViewer::applyTransformations(const float *xsThenYsArray)

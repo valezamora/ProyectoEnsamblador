@@ -75,8 +75,11 @@ private:
      */
     void enableAllInteractions();
 
-
-
+    /**
+     * @brief Sends the SITVG's coordinates and the transformations in the list to
+     * the device driver so the transformation process begins.
+     */
+    void sendTransformations();
 };
 
 #endif // MAINWINDOW_H
