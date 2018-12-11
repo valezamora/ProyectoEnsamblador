@@ -25,15 +25,15 @@ transfomarImagen:
 	push ebp
 	mov ebp, esp
 	
+	; -------parametros---------------------------------------------------
+	; cantidad de transformaciones, vector de transformaciones, cantidad puntos x o filas, cantidad de puntos y o columnas y puntero a imagen
 	; guardar direcciones de variables globales
 	; se pasan como parametro (direccionTransformaciones, direccionImagen)
-	mov dirTransformaciones, rdi
-	mov dirImagen, rsi
-	
-	;guardar tamanos
-	mov cantX, [rsi]
-	mov cantY, [rsi+4]
-	mov cantTransformaciones, [rdi]
+	mov cantTransformaciones, rdi
+	mov dirTransformaciones, rsi
+	mov cantX, rdx
+	mov cantY, rcx
+	mov dirImagen, r8
 	
 	; for por cantidad de transformaciones
 	mov rdx, 0  ;contador
@@ -123,13 +123,13 @@ reflexion:
 	
 	forReflexion:
 		; mueve parte del vector de datos x a ymm0
-		vmovaps ymm0, ymmword ptr [r10+r13] 
+		vmovaps ymm0, ymmword  [r10+r13] 
 		;mueve parte del vector de ddatos y a ymm1
-		vmovaps ymm1, ymmword ptr [r11+r13]
+		vmovaps ymm1, ymmword  [r11+r13]
 		
 		; guarda invertidos los puntos
-		vmovaps ymmword ptr [r10+r13], ymm1
-		vmovaps ymmword ptr [r11+r13], ymm0
+		vmovaps ymmword  [r10+r13], ymm1
+		vmovaps ymmword  [r11+r13], ymm0
 	
 		; aumentar contador
 		inc r12
@@ -178,22 +178,22 @@ escalacion:
 	;ciclo para leer los valores y sumarles el parametro en x y y
 	forEscalacion:
 		; mueve parte del vector de datos x a ymm2
-		vmovaps ymm2, ymmword ptr [r10+r13] 
+		vmovaps ymm2, ymmword  [r10+r13] 
 		
 		; multiplicacion
 		vmulps ymm4,ymm0,ymm2
 		
 		; guarda resultado de vuelta al vector
-		vmovaps ymmword ptr [r10+r13], ymm4
+		vmovaps ymmword  [r10+r13], ymm4
 		
 		; mueve parte del vector de datos y a ymm3
-		vmovaps ymm2, ymmword ptr [r11+r13] 
+		vmovaps ymm2, ymmword  [r11+r13] 
 
 		; multiplicacion 
 		vmulps ymm4,ymm1,ymm3
 	
 		; guarda resultado de vuelta al vector
-		vmovaps ymmword ptr [r11+r13],ymm4
+		vmovaps ymmword  [r11+r13],ymm4
 		
 		; aumentar contador
 		inc r12
@@ -244,22 +244,22 @@ traslacion:
 	;ciclo para leer los valores y sumarles el parametro en x y y
 	forTraslacion:
 		; mueve parte del vector de datos x a ymm2
-		vmovaps ymm2, ymmword ptr [r10+r13] 
+		vmovaps ymm2, ymmword  [r10+r13] 
 		
 		;suma
 		vaddps ymm4,ymm0,ymm2
 		
 		; guarda resultado de vuelta al vector
-		vmovaps ymmword ptr [r10+r13], ymm4
+		vmovaps ymmword  [r10+r13], ymm4
 		
 		; mueve parte del vector de datos y a ymm3
-		vmovaps ymm2, ymmword ptr [r11+r13] 
+		vmovaps ymm2, ymmword  [r11+r13] 
 
 		; suma 
 		vaddps ymm4,ymm1,ymm3
 	
 		; guarda resultado de vuelta al vector
-		vmovaps ymmword ptr [r11+r13],ymm4
+		vmovaps ymmword  [r11+r13],ymm4
 		
 		; aumentar contador
 		inc r12
@@ -299,13 +299,13 @@ brillo:
 	
 	forBrillo:
 		; Se guarda imagen en ymm1
-		vmovdqa ymm1,ymmword ptr [r10+r12]
+		vmovdqa ymm1,ymmword  [r10+r12]
 		
 		; Se le suma el nivel del cambio en ymm2 (ymm0 + ymm1) (instruccion para 1 byte)
-		vaddps ymm2, ymm0, ymm1	
+		vpaddb ymm2, ymm0, ymm1	
 		
 		; Se guarda imagen nuevamente
-		vmovdqa ymmword ptr [r10+r12], ymm1
+		vmovdqa ymmword [r10+r12], ymm1
 		
 		; aumentar contador
 		inc r11
@@ -323,8 +323,8 @@ brillo:
 ; id = 4
 negativo:
 	; Se genera vector que contiene 255 (64 255's) se guarda en ymm0
-	mov al, ffh
-	vpbroadcastb ymm0, [al]
+	mov r8, ffh
+	vpbroadcastb ymm0, [r8]
 	
 	; Ciclo para negativo
 	
@@ -341,13 +341,13 @@ negativo:
 	
 	forNegativo:
 		; Se guarda imagen en ymm1
-		vmovdqa ymm1,ymmword ptr [r10+r12]
+		vmovdqa ymm1,ymmword [r10+r12]
 		
 		; Se le resta el vector de 255 
 		vpsubb ymm2, ymm0, ymm1
 		
 		; Se guarda imagen nuevamente
-		vmovdqa ymmword ptr [r10+r12], ymm2
+		vmovdqa ymmword [r10+r12], ymm2
 		
 		; aumentar contador
 		inc r11
@@ -365,8 +365,7 @@ negativo:
 ; id = 5
 contraste:
 ; Se genera vector que contiene el parametro  (64 255's) se guarda en ymm0
-	mov al, r8
-	vpbroadcastb ymm0, [al]
+	vpbroadcastb ymm0, [r8]
 	
 	; Ciclo para contraste
 	
@@ -383,13 +382,13 @@ contraste:
 	
 	forContraste:
 		; Se guarda imagen en ymm1
-		vmovdqa ymm1,ymmword ptr [r10+r12]
+		vmovdqa ymm1,ymmword [r10+r12]
 		
 		; Se le suma el vector de parametro 
-		vaddps ymm2, ymm0, ymm1
+		vpaddb ymm2, ymm0, ymm1
 		
 		; Se guarda imagen nuevamente
-		vmovdqa ymmword ptr [r10+r12], ymm2
+		vmovdqa ymmword [r10+r12], ymm2
 		
 		; aumentar contador
 		inc r11
