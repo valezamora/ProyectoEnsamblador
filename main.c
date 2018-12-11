@@ -3,13 +3,14 @@
 #include "transformaciones.h"
 
 int main ( int argc, char *argv[] ) {
-	unsigned float * trans = {1, 0, 0, 0};
-	unsigned float * imagenVectorial = {5,5,2.4,5,2,6,2.1,5.3,6,7,2,9};
+	int cantidadTransf = 1;
+	unsigned float * trans = {0, 0, 0};
+	int cantidadX = 50;
+	int cantidadY = 50;
+	unsigned float * imagenVectorial = {1,2,3,4,5,6,7,8,9,10,21,2,3,4,5,6,7,8,9,10,31,2,3,4,5,6,7,8,9,10,41,2,3,4,5,6,7,8,9,10,51,2,3,4,5,6,7,8,9,10,61,2,3,4,5,6,7,8,9,10,71,2,3,4,5,6,7,8,9,10,81,2,3,4,5,6,7,8,9,10,91,2,3,4,5,6,7,8,9,10,101,2,3,4,5,6,7,8,9,10};
 	
-	transfomarImagen(&trans, &imagenVectorial);
-	
-	imprimir(trans, 4);
-	imprimir(imagenVectorial, 12);
+	transfomarImagen(cantidadTransf, &trans, cantidadX, cantidadY, &imagenVectorial);
+	imprimir(imagenVectorial, 100);
 }
 
 /* Imprime*/
