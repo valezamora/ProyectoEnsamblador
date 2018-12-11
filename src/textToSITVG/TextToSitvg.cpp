@@ -185,7 +185,6 @@ int advancedMode()
     // Reads base file name
     std::cout << "  Nombre base de los archivos: ";
     std::cin >> baseFileName;
-    baseFileName = "Imagenes_generadas/" + baseFileName;
 
     // Deletes the file extension if needed
     unsigned long pos = baseFileName.find(".sitvg", baseFileName.length() - 6 - 1);
