@@ -4,6 +4,7 @@
 #include <QAbstractListModel>
 #include "transformation.h"
 #include <QString>
+#include <cstring>      //  For memory copy
 
 /**
  * @brief Class that stores a list of transformations that can be graphically represented
@@ -41,6 +42,13 @@ class TransformationList : public QAbstractListModel
     {
         return transformations.size();
     }
+
+    /**
+     * @brief Gets the data for transformations codified in an integer array.
+     * @param transformations Pointer in which the transformations array will be put.
+     * @param noOfTransformations Integer in which the number of transformations will be put.
+     */
+    void getDataForTransformation(int * & transformations, int & noOfTransformations) const;
 
     /**
      * @brief Clears all of the data in the object.

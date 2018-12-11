@@ -102,6 +102,28 @@ void MainWindow::enableAllInteractions()
     ui->yLineEdit->setEnabled(true);
 }
 
+void MainWindow::sendTransformations()
+{
+    int type = 1; // Vectorial
+
+    float * coordinates = nullptr;
+    unsigned noOfCoordinates = 0;
+    int * transformations = nullptr;
+    int noOfTransformations = 0;
+
+    this->transImage = this->baseImage->newClone();
+    this->transImage->getDataForTransformation(coordinates, noOfCoordinates);
+    this->transList.getDataForTransformation(transformations, noOfTransformations);
+
+    // envío de type, noOfTransformations, transformations, noOfCoordinates, Coordinates
+
+    //this->transImage->applyTransformations(arregloRetornado);
+
+    this->transList.clear();
+    delete coordinates;
+    delete transformations;
+}
+
 void MainWindow::on_changeFileButton_clicked()
 {
     if (setInputFile())
@@ -219,10 +241,10 @@ void MainWindow::on_applyButton_clicked()
     {
         if (this->baseImage)
         {
-            //this->disableAllInteractions();
-            //ui->statusBar->showMessage(tr("Aplicando transformaciones. Por favor espera, esto podría tardar un poco."));
-            //this->sendTransformations();
-            //this->enableAllInteractions();
+            this->disableAllInteractions();
+            ui->statusBar->showMessage(tr("Aplicando transformaciones. Por favor espera, esto podría tardar un poco."));
+            this->sendTransformations();
+            this->enableAllInteractions();
         }
         else
         {
