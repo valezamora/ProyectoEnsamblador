@@ -18,6 +18,8 @@ MainWindow::~MainWindow()
 {
     if (baseImage)
         delete baseImage;
+    if (transImage)
+        delete transImage;
     delete ui;
 }
 
