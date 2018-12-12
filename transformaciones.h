@@ -1,1 +1,1 @@
-void transformarImagen(int cantT, float * vectorTransformaciones, int cantX, int cantY, void * imagen);
+void transformarImagen(int cantT, int * vectorTransformaciones, int cantX, void * imagen);
