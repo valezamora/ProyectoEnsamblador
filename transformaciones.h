@@ -1,1 +1,1 @@
-void transfomarImagen(int cantT, unsigned int * vectorTransformaciones, int cantX, int cantY, void * imagen);
+void transfomarImagen(int cantT, float * vectorTransformaciones, int cantX, int cantY, void * imagen);
