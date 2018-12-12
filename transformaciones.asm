@@ -443,7 +443,7 @@ saturacion:
 
 	; contador
 	mov r11, 0		; contador
-	mov r12, 0 		; traslacion dentro del vector de pixeles
+	mov r12, 0 		; traslacion dentro del vector de pixeles	
 	mov rax, r10	; cantidad total de puntos (cada uno de 3 bytes)
 	mov r14, 3
 	mul r14
@@ -461,7 +461,7 @@ saturacion:
 		vmovdqa ymm2, [r8+r12]
 		
 		; Se le resta 128 
-		vpsubb ymm3, ymm2, ymm1
+		vpsubb ymm3, ymm2, ymm1		
 		
 		;multiplica por fc
 		vpmaddubsw ymm2, ymm3, ymm0
