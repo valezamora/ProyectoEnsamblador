@@ -1,10 +1,10 @@
-#include "mainwindow.h"
+#include "sitvgwindow.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
+    SITVGWindow w;
     w.show();
 
     return a.exec();

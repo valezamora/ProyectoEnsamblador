@@ -1,9 +1,9 @@
-#include "mainwindow.h"
+#include "sitvgwindow.h"
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent) :
+SITVGWindow::SITVGWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow),
+    ui(new Ui::SITVGWindow),
     baseImage(nullptr),
     transImage(nullptr),
     transList()
@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->listView->setModel(&transList);
 }
 
-MainWindow::~MainWindow()
+SITVGWindow::~SITVGWindow()
 {
     if (baseImage)
         delete baseImage;
@@ -23,7 +23,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-bool MainWindow::setInputFile()
+bool SITVGWindow::setInputFile()
 {
     // Choose file
     QString pathName = QFileDialog::getOpenFileName(this, tr("Seleccione la imagen por transformar"),
@@ -60,7 +60,7 @@ bool MainWindow::setInputFile()
         return false;
 }
 
-void MainWindow::disableAllInteractions()
+void SITVGWindow::disableAllInteractions()
 {
     this->enabledInteractions = false;
 
@@ -82,7 +82,7 @@ void MainWindow::disableAllInteractions()
     ui->yLineEdit->setEnabled(false);
 }
 
-void MainWindow::enableAllInteractions()
+void SITVGWindow::enableAllInteractions()
 {
     this->enabledInteractions = true;
 
@@ -104,9 +104,8 @@ void MainWindow::enableAllInteractions()
     ui->yLineEdit->setEnabled(true);
 }
 
-void MainWindow::sendTransformations()
+void SITVGWindow::sendTransformations()
 {
-    int type = 1; // Vectorial
     bool success = false;
 
     float * coordsWithPadding = nullptr;
@@ -153,13 +152,13 @@ void MainWindow::sendTransformations()
     delete [] transformations;
 }
 
-void MainWindow::on_changeFileButton_clicked()
+void SITVGWindow::on_changeFileButton_clicked()
 {
     if (setInputFile())
         ui->statusBar->showMessage(tr("Imagen cambiada."), 8000);
 }
 
-void MainWindow::on_viewBaseButton_clicked()
+void SITVGWindow::on_viewBaseButton_clicked()
 {
     if (baseImage)
     {
@@ -171,7 +170,7 @@ void MainWindow::on_viewBaseButton_clicked()
     }
 }
 
-void MainWindow::on_addButton_clicked()
+void SITVGWindow::on_addButton_clicked()
 {
     this->disableAllInteractions();
     if (ui->reflectionSelect->isChecked())
@@ -237,7 +236,7 @@ void MainWindow::on_addButton_clicked()
     this->enableAllInteractions();
 }
 
-void MainWindow::on_cleanParamButton_clicked()
+void SITVGWindow::on_cleanParamButton_clicked()
 {
     this->disableAllInteractions();
     ui->statusBar->showMessage(tr("Parámetros limpiados."), 3000);
@@ -247,7 +246,7 @@ void MainWindow::on_cleanParamButton_clicked()
     this->enableAllInteractions();
 }
 
-void MainWindow::on_cleanListButton_clicked()
+void SITVGWindow::on_cleanListButton_clicked()
 {
     if (transList.size() > 0)
     {
@@ -262,7 +261,7 @@ void MainWindow::on_cleanListButton_clicked()
     }
 }
 
-void MainWindow::on_applyButton_clicked()
+void SITVGWindow::on_applyButton_clicked()
 {
     ui->statusBar->showMessage(tr("Funcionalidad implementada en un futuro próximo."), 8000);
 
@@ -286,7 +285,7 @@ void MainWindow::on_applyButton_clicked()
     }
 }
 
-void MainWindow::on_viewTransButtom_clicked()
+void SITVGWindow::on_viewTransButtom_clicked()
 {
     if (transImage)
     {
@@ -298,7 +297,7 @@ void MainWindow::on_viewTransButtom_clicked()
     }
 }
 
-void MainWindow::on_saveButton_clicked()
+void SITVGWindow::on_saveButton_clicked()
 {
     ui->statusBar->showMessage(tr("Funcionalidaddisponible en una actualización futura."), 5000);
 

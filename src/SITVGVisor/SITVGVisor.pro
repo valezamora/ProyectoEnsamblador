@@ -25,24 +25,24 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp \
     sitvgloader.cpp \
     sitvgdata.cpp \
     sitvgviewer.cpp \
-    transformationlist.cpp
+    transformationlist.cpp \
+    sitvgwindow.cpp
 
 HEADERS += \
-        mainwindow.h \
     sitvgloader.h \
     sitvgdata.h \
     rgbcolor.h \
     sitvgviewer.h \
     transformationlist.h \
-    transformation.h
+    transformation.h \
+    sitvgwindow.h
 
 FORMS += \
-        mainwindow.ui \
-    sitvgviewer.ui
+    sitvgviewer.ui \
+    sitvgwindow.ui
 
 DISTFILES += \
     sitvgplanning.txt
