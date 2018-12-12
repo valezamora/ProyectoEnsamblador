@@ -18,6 +18,8 @@ MainWindow::~MainWindow()
 {
     if (baseImage)
         delete baseImage;
+    if (transImage)
+        delete transImage;
     delete ui;
 }
 
@@ -116,8 +118,19 @@ void MainWindow::sendTransformations()
     this->transList.getDataForTransformation(transformations, noOfTransformations);
 
     // envío de type, noOfTransformations, transformations, noOfCoordinates, Coordinates
+    /**     ############## Chisco pls aiuda ##############
+    write(&type, 4);
 
-    //this->transImage->applyTransformations(arregloRetornado);
+    write(&noOfTransformations, 4);
+    write(transformations, 4*3*noOfTransformations);
+
+    write(&noOfCoordinates, 4);
+    write(coordinates, 2*4*noOfCoordinates);
+
+
+    int * resultingCoords = read (...) // O se hace en el mismo arreglo?
+    this->transImage->applyTransformations(resultingCoords);
+    delete resultingCoords // Si se recibe en el mismo arreglo, no hay ni que crear este. Menos borrarlo.*/
 
     this->transList.clear();
     delete coordinates;
