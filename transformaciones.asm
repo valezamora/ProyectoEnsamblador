@@ -26,7 +26,7 @@ transformarImagen:
 	push r13
 	push r14
 		
-	; -------parametros---------------------------------------------------
+	; ----------------------parametros---------------------------------------------------
 	; cantidad de transformaciones, vector de transformaciones, cantidad puntos x o filas, cantidad de puntos y o columnas y puntero a imagen
 	; guardar direcciones de variables globales
 	; se pasan como parametro (direccionTransformaciones, direccionImagen)
@@ -37,6 +37,7 @@ transformarImagen:
 	;mov [dirImagen], r8
 	
 	mov r10, rdx
+	mov r8, rcx		; copia direccion de la imagen
 	
 	; for por cantidad de transformaciones
 	mov rbx, 0  ;contador
@@ -94,7 +95,7 @@ testFor1:
 	jl for1			; salta al contenido del for si el contador es menor que la cantidad de transformaciones
 	jmp fin			; salta al fin de la funcion
 	
-; ---------------- REGISTROS OCUPADOS -----------------------------
+; ------------------------------- REGISTROS OCUPADOS ---------------------------------------
 ; 
 ; Registros ocupados:
 ;	- rax = tipo de transformacion
@@ -108,22 +109,28 @@ testFor1:
 
 
 
-; ---------------- Transformaciones de imagenes vectoriales -----------------------------
+; --------------------- Transformaciones de imagenes vectoriales -----------------------------
 
 ;id = 0
 reflexion:		
 	
 	;get inicio de puntos y (r11)
-	mov r11, r10	; cantidad de puntos
+	mov rax, r10
+	mov r11, 2
+	div r11			; divide entre 2 el total de coordenadas
+	mov r11, rax	; cantidad de puntos
 	mov rax, 4
 	mul r11
-	mov r11, rax	;distania del inicio del vector
+	mov r11, rax	;distancia del inicio del vector
 	mov r13, r8
 	add r11, r13		; posicion inicial de puntos y
 
 	
 	;calcular cantidad de operaciones requeridas 
 	mov rax, r10
+	mov r13, 2
+	div r13			; divide entre 2 el total de coordenadas para tener total de puntos
+	
 	mov r13, 8
 	div r13			; (total de puntos en un eje/8)
 	mov r14, rax
@@ -140,7 +147,7 @@ reflexion:
 	forReflexion:
 		; mueve parte del vector de datos x a ymm0
 		vmovaps ymm0, [r8+r13] 
-		;mueve parte del vector de ddatos y a ymm1
+		;mueve parte del vector de datos y a ymm1
 		vmovaps ymm1, [r11+r13]
 		
 		; guarda invertidos los puntos
@@ -184,10 +191,15 @@ escalacion:
 	vpbroadcastd ymm1, [r9]
 	
 	;calcular cantidad de operaciones requeridas 
+	;calcular cantidad de operaciones requeridas 
 	mov rax, r10
+	mov r13, 2
+	div r13			; divide entre 2 el total de coordenadas para tener total de puntos
+	
 	mov r13, 8
 	div r13			; (total de puntos en un eje/8)
 	mov r14, rax
+
 	
 	; contador (r12)
 	mov r12, 0
@@ -254,11 +266,13 @@ traslacion:
 	vpbroadcastd ymm1, [r9]
 	
 	;calcular cantidad de operaciones requeridas 
-	mov rax, rdx
+	mov rax, r10
+	mov r13, 2
+	div r13			; divide entre 2 el total de coordenadas para tener total de puntos
+	
 	mov r13, 8
 	div r13			; (total de puntos en un eje/8)
 	mov r14, rax
-
 	
 	; contador (r12)
 	mov r12, 0
@@ -315,13 +329,14 @@ brillo:
 	vpbroadcastb ymm0, [r15]
 	
 	; Ciclo para sumar el vector a todas las entradas 
-	mov r11, 0		;contador
-	mov r12, 0 		;traslacion dentro del vector de pixeles
-	mov rax, rdx
-	mov r14, rcx
-	mul r14		; cantidad total de puntos (cada uno de 24 bits)
-	mov r13, 32
-	div r13 	; total de operaciones requeridas (total puntos/32)
+		; contador
+	mov r11, 0		; contador
+	mov r12, 0 		; traslacion dentro del vector de pixeles
+	mov rax, r10	; cantidad total de puntos (cada uno de 3 bytes)
+	mov r14, 3
+	mul r14
+	mov r13, 32  	; total de operaciones requeridas 
+	div r13
 	mov r13, rax
 	
 	jmp tesForBrillo
@@ -353,19 +368,20 @@ brillo:
 negativo:
 	; Se genera vector que contiene 255 (64 255's) se guarda en ymm0
 	mov r15, 255
-	vpbroadcastb ymm0, [r15]
+	vpbroadcastb ymm0, byte [r15]
 	
 	; Ciclo para negativo
 	
-	; contador
-	mov r11, 0		;contador
-	mov r12, 0 		;traslacion dentro del vector de pixeles
-	mov rax, rdx
-	mov r14, rcx
-	mul r14			; cantidad total de puntos (cada uno de 24 bits)
-	mov r13, 32 	;total de operaciones requeridas (total puntos/32)
+		; contador
+	mov r11, 0		; contador
+	mov r12, 0 		; traslacion dentro del vector de pixeles
+	mov rax, r10	; cantidad total de puntos (cada uno de 3 bytes)
+	mov r14, 3
+	mul r14
+	mov r13, 32  	; total de operaciones requeridas 
 	div r13
 	mov r13, rax
+	
 	
 	jmp testForNegativo
 	
@@ -396,38 +412,70 @@ negativo:
 saturacion:
 	
 	; Ciclo para contraste
+
+	; calculo de FC
+	xor rax, rax
+	;numerador
+	mov r11, 259
+	mov rax, 255
+	add rax, [r15]
+	mul r11
+	mov r11, rax
 	
+	;denominador
+	mov rax, 259
+	sub rax, [r15]
+	mov r12, 255
+	mul r12
+	mov r12, rax
+	
+	;division
+	mov rax, r11
+	div r12
+
+
+	; Se genera vector que contiene el parametro 
+	vpbroadcastb ymm0, rax
+	xor rax, rax
+	mov al, 128
+	vpbroadcastb ymm1, rax 
+	
+
 	; contador
 	mov r11, 0		; contador
 	mov r12, 0 		; traslacion dentro del vector de pixeles
-	mov rax, r10	; cantidad x
-	mov r14, rcx	; cantidad y
-	mul r14			; cantidad total de puntos (cada uno de 24 bits)
-	mov r13, 10 	; total de operaciones requeridas (total puntos/10) se procesa de 10 en 10 pixeles
+	mov rax, r10	; cantidad total de puntos (cada uno de 3 bytes)
+	mov r14, 3
+	mul r14
+	mov r13, 32  	; total de operaciones requeridas 
 	div r13
 	mov r13, rax
 	
-	
-	; Se genera vector que contiene el parametro 
-	vpbroadcastb ymm0, byte [r15]
 	
 	
 	jmp testForContraste
 	
 	forContraste:
-		; Se guarda imagen en ymm1
-		vmovdqa ymm1, [r8+r12]
 		
-		; Se le suma el vector de parametro 
-		vpaddb ymm2, ymm0, ymm1
+		; Se guarda imagen en ymm2
+		vmovdqa ymm2, [r8+r12]
+		
+		; Se le resta 128 
+		vpsubb ymm3, ymm2, ymm1
+		
+		;multiplica por fc
+		vpmaddubsw ymm2, ymm3, ymm0
+		
+		; suma 128
+		vpaddb ymm3, ymm2, ymm1
 		
 		; Se guarda imagen nuevamente
-		vmovdqa  [r8+r12], ymm2
+		vmovdqa  [r8+r12], ymm3
 		
 		; aumentar contador
 		inc r11
-		add r12, 240 	;(sumar 240 = 10 pixeles de 24 bits cada uno)
-	
+		add r12, 100h
+		
 	testForContraste:
 		cmp r11, r13
 		jl forContraste

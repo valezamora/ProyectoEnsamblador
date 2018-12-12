@@ -2,15 +2,6 @@
 #include <stdlib.h>
 #include "transformaciones.h"
 
-/* Imprime*/
-/*
-void imprimir(float *vector, int nbytes) {
-	for(int i=0; i<nbytes; ++i){
-		printf("%.1f , ", vector[i]);
-	}
-	printf("\n");
-}
-*/
 int main ( int argc, char *argv[] ) {
 	int cantidadTransf = 1;
 	float trans[3] = {0, 0, 0};
@@ -20,8 +11,6 @@ int main ( int argc, char *argv[] ) {
 	
 	transformarImagen(cantidadTransf, &trans, 16, cantidadY, &imagenVectorial);
 	
-	//printf ("Termino transformacion");
-	//imprimir(&imagenVectorial, 32);
 }
 
 
