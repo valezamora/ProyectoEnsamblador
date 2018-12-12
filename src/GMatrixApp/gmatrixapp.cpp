@@ -21,18 +21,17 @@ void GMatrixApp::on_vectorialButton_clicked()
 }
 
 void GMatrixApp::on_bitmapButton_clicked()
-{/*
-    BitmapWindow bitmapW;
+{
+    this->bitmapW = new BitmapWindow();
     this->hide();
-    bitmapW.show();
-*/}
+    this->bitmapW->show();
+}
 
 void GMatrixApp::endExecution()
 {
     if (sitvgW)
         delete sitvgW;
-    //if (bitmapW)
-    //    delete bitmapW;
-
+    if (bitmapW)
+        delete bitmapW;
     this->close();
 }

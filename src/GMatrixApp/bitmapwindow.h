@@ -1,14 +1,10 @@
-#ifndef SITVGWINDOW_H
-#define SITVGWINDOW_H
+#ifndef BITMAPWINDOW_H
+#define BITMAPWINDOW_H
 
 #include <QWidget>
-#include "sitvgdata.h"
-#include "sitvgloader.h"
-#include "sitvgviewer.h"
-#include <QString>
-#include <QFileDialog>
 #include "transformationlist.h"
-//#include <stdio.h>
+#include <QFileDialog>
+#include "bitmapviewer.h"
 #include <stdlib.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -17,28 +13,25 @@
 #include <iostream>
 #include <cassert>
 #include <QStatusBar>
+#include <QString>
 
 namespace Ui {
-class SITVGWindow;
+class BitmapWindow;
 }
 
-/**
- * @brief Class for managing SITGV transformations.
- * @remarks Class to be converted to a non main window.
- */
-class SITVGWindow : public QWidget
+class BitmapWindow : public QWidget
 {
     Q_OBJECT
 
   private:
     /// User interface
-    Ui::SITVGWindow *ui;
+    Ui::BitmapWindow *ui;
 
-    /// Input SITVG image
-    SITVGViewer * baseImage;
+    /// Input bitmap image
+    BitmapViewer * baseImage;
 
-    /// Transformed SITVG image
-    SITVGViewer * transImage;
+    /// Transformed bitmap image
+    BitmapViewer * transImage;
 
     /// List of transformations stored as an array
     TransformationList transList;
@@ -50,8 +43,8 @@ class SITVGWindow : public QWidget
     QStatusBar * statusBar;
 
   public:
-    explicit SITVGWindow(/*QString inputFilePath,*/ QWidget *parent = 0);
-    ~SITVGWindow();
+    explicit BitmapWindow(QWidget *parent = 0);
+    ~BitmapWindow();
 
   private slots: // Self explanatory widget interactions.
 
@@ -73,25 +66,25 @@ class SITVGWindow : public QWidget
 
   private:
     /**
-     * @brief Opens a new SITVG file as image to transform.
-     */
+    * @brief Opens a new bitmap file as image to transform.
+    */
     bool setInputFile();
 
     /**
-     * @brief Disables every widget's user interactions in the UI.
-     */
+    * @brief Disables every widget's user interactions in the UI.
+    */
     void disableAllInteractions();
 
     /**
-     * @brief Enables every currently usable widget's user interactions in the UI.
-     */
+    * @brief Enables every currently usable widget's user interactions in the UI.
+    */
     void enableAllInteractions();
 
     /**
-     * @brief Sends the SITVG's coordinates and the transformations in the list to
-     * the device driver so the transformation process begins.
-     */
+    * @brief Sends the SITVG's coordinates and the transformations in the list to
+    * the device driver so the transformation process begins.
+    */
     void sendTransformations();
 };
 
-#endif // SITVGWINDOW_H
+#endif // BITMAPWINDOW_H

@@ -87,7 +87,7 @@ SITVGData & SITVGData::operator= (SITVGData && other)
 
 float *SITVGData::getXsThenYsArray() const
 {
-    int paddingCoords = (this->coordsAmount % 16);
+    int paddingCoords = (16 - this->coordsAmount % 16);
     float * arr = new float [(this->coordsAmount + paddingCoords) * 2];
     float * xArr = arr;
     float * yArr = arr + (this->coordsAmount + paddingCoords);
@@ -109,7 +109,7 @@ float *SITVGData::getXsThenYsArray() const
 
 void SITVGData::setXsThenYs(const float *xsThenYsArray)
 {
-    int paddingCoords = (this->coordsAmount % 16);
+    int paddingCoords = (16 - this->coordsAmount % 16);
     const float * xArr = xsThenYsArray;
     const float * yArr = xsThenYsArray + (this->coordsAmount + paddingCoords);
 

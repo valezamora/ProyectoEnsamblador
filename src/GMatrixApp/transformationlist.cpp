@@ -44,9 +44,23 @@ void TransformationList::getDataForTransformation(int *&transformations, int &no
             counter += intSize;
             break;
 
-            // Could include the other 3 transformations.
+        case matBrightness:
+            memcpy(transformations + counter, & this->transformations[trans].dataOf.mBrightness.brightnessChange, 1);
+            counter += rawParamSize;
+            break;
+
+        case matNegative:
+            // Noting else is copied.
+            counter += rawParamSize;
+            break;
+
+        case MatRedSat:
+            memcpy(transformations + counter, &this->transformations[trans].dataOf.mRedSat.redSatChange, 1);
+            counter += rawParamSize;
+            break;
 
         default:
+            assert(0);
             break;
         }
     }
