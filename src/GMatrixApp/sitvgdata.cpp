@@ -87,14 +87,21 @@ SITVGData & SITVGData::operator= (SITVGData && other)
 
 float *SITVGData::getXsThenYsArray() const
 {
-    float * arr = new float [this->coordsAmount << 1];
+    int paddingCoords = (this->coordsAmount % 16);
+    float * arr = new float [(this->coordsAmount + paddingCoords) * 2];
     float * xArr = arr;
-    float * yArr = arr + this->coordsAmount;
+    float * yArr = arr + (this->coordsAmount + paddingCoords);
 
-    for (unsigned long long index = 0; index < this->coordsAmount; ++ index)
+    for (unsigned index = 0; index < this->coordsAmount; ++ index)
     {
         xArr[index] = this->xCoords[index];
         yArr[index] = this->yCoords[index];
+    }
+
+    for (int index = 0; index < paddingCoords; ++ index)
+    {
+        xArr[this->coordsAmount + index] = 0;
+        yArr[this->coordsAmount + index] = 0;
     }
 
     return arr;
@@ -102,10 +109,11 @@ float *SITVGData::getXsThenYsArray() const
 
 void SITVGData::setXsThenYs(const float *xsThenYsArray)
 {
+    int paddingCoords = (this->coordsAmount % 16);
     const float * xArr = xsThenYsArray;
-    const float * yArr = xsThenYsArray + this->coordsAmount;
+    const float * yArr = xsThenYsArray + (this->coordsAmount + paddingCoords);
 
-    for (unsigned long long index = 0; index < this->coordsAmount; ++ index)
+    for (unsigned index = 0; index < this->coordsAmount; ++ index)
     {
         this->xCoords[index] = xArr[index];
         this->yCoords[index] = yArr[index];

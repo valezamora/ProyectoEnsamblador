@@ -15,16 +15,24 @@ GMatrixApp::~GMatrixApp()
 
 void GMatrixApp::on_vectorialButton_clicked()
 {
-    SITVGWindow sitvgW;
+    this->sitvgW = new SITVGWindow();
     this->hide();
-    sitvgW.exec(); // Should block current window
-    this->close();
+    this->sitvgW->show();
 }
 
 void GMatrixApp::on_bitmapButton_clicked()
-{
+{/*
     BitmapWindow bitmapW;
     this->hide();
-    bitmapW.exec(); // Should block current window
+    bitmapW.show();
+*/}
+
+void GMatrixApp::endExecution()
+{
+    if (sitvgW)
+        delete sitvgW;
+    //if (bitmapW)
+    //    delete bitmapW;
+
     this->close();
 }

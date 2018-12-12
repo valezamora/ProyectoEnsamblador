@@ -1,29 +1,32 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "sitvgwindow.h"
+#include "ui_sitvgwindow.h"
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow),
+SITVGWindow::SITVGWindow(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::SITVGWindow),
     baseImage(nullptr),
     transImage(nullptr),
-    transList()
+    transList(),
+    statusBar(new QStatusBar)
 {
     ui->setupUi(this);
     ui->fileNameLabel->setText("Ninguna.");
+    ui->statusBarLayout->addWidget(statusBar);
     setInputFile();
     ui->listView->setModel(&transList);
 }
 
-MainWindow::~MainWindow()
+SITVGWindow::~SITVGWindow()
 {
     if (baseImage)
         delete baseImage;
     if (transImage)
         delete transImage;
+    delete statusBar;
     delete ui;
 }
 
-bool MainWindow::setInputFile()
+bool SITVGWindow::setInputFile()
 {
     // Choose file
     QString pathName = QFileDialog::getOpenFileName(this, tr("Seleccione la imagen por transformar"),
@@ -60,7 +63,7 @@ bool MainWindow::setInputFile()
         return false;
 }
 
-void MainWindow::disableAllInteractions()
+void SITVGWindow::disableAllInteractions()
 {
     this->enabledInteractions = false;
 
@@ -82,7 +85,7 @@ void MainWindow::disableAllInteractions()
     ui->yLineEdit->setEnabled(false);
 }
 
-void MainWindow::enableAllInteractions()
+void SITVGWindow::enableAllInteractions()
 {
     this->enabledInteractions = true;
 
@@ -104,46 +107,61 @@ void MainWindow::enableAllInteractions()
     ui->yLineEdit->setEnabled(true);
 }
 
-void MainWindow::sendTransformations()
+void SITVGWindow::sendTransformations()
 {
-    int type = 1; // Vectorial
+    bool success = false;
 
-    float * coordinates = nullptr;
+    float * coordsWithPadding = nullptr;
     unsigned noOfCoordinates = 0;
     int * transformations = nullptr;
     int noOfTransformations = 0;
 
     this->transImage = this->baseImage->newClone();
-    this->transImage->getDataForTransformation(coordinates, noOfCoordinates);
+    this->transImage->getDataForTransformation(coordsWithPadding, noOfCoordinates);
     this->transList.getDataForTransformation(transformations, noOfTransformations);
 
-    // envío de type, noOfTransformations, transformations, noOfCoordinates, Coordinates
-    /**     ############## Chisco pls aiuda ##############
-    write(&type, 4);
+    noOfCoordinates += noOfCoordinates % 16;
 
-    write(&noOfTransformations, 4);
-    write(transformations, 4*3*noOfTransformations);
+    //Send and receive data to and from kernel
+    int ret = 0, fd = open("/dev/ebbchar", O_RDWR); // Opens the device with read/write access
 
-    write(&noOfCoordinates, 4);
-    write(coordinates, 2*4*noOfCoordinates);
+    if (fd >= 0)
+    {
+        ret = write(fd, (char*)coordsWithPadding, 2*(noOfCoordinates*4) ); // Send the string to the LKM
+        if (ret >= 0)
+        {
+            ret = write(fd, (char*)transformations, noOfTransformations*4 ); // Send the string to the LKM
+            if (ret >= 0)
+            {
+                ret = read(fd, (char*)coordsWithPadding, noOfCoordinates*4); // Read the response from the LKM
 
+                if (ret < 0) {
+                    perror("Failed to read the message from the device.");
+                }
+                else
+                {
+                    success = true;
+                    this->transImage->applyTransformations(coordsWithPadding);
+                    this->transList.clear();
+                }
+            }
+        }
+    }
 
-    int * resultingCoords = read (...) // O se hace en el mismo arreglo?
-    this->transImage->applyTransformations(resultingCoords);
-    delete resultingCoords // Si se recibe en el mismo arreglo, no hay ni que crear este. Menos borrarlo.*/
+    if (!success)
+        statusBar->showMessage(tr("Error al comunicarse con el dispositivo."), 5000);
 
-    this->transList.clear();
-    delete coordinates;
-    delete transformations;
+    delete [] coordsWithPadding;
+    delete [] transformations;
 }
 
-void MainWindow::on_changeFileButton_clicked()
+void SITVGWindow::on_changeFileButton_clicked()
 {
     if (setInputFile())
-        ui->statusBar->showMessage(tr("Imagen cambiada."), 8000);
+        statusBar->showMessage(tr("Imagen cambiada."), 8000);
 }
 
-void MainWindow::on_viewBaseButton_clicked()
+void SITVGWindow::on_viewBaseButton_clicked()
 {
     if (baseImage)
     {
@@ -151,11 +169,11 @@ void MainWindow::on_viewBaseButton_clicked()
     }
     else
     {
-        ui->statusBar->showMessage(tr("Aún no se ha cargado una imagen para transformar."), 5000);
+        statusBar->showMessage(tr("Aún no se ha cargado una imagen para transformar."), 5000);
     }
 }
 
-void MainWindow::on_addButton_clicked()
+void SITVGWindow::on_addButton_clicked()
 {
     this->disableAllInteractions();
     if (ui->reflectionSelect->isChecked())
@@ -165,7 +183,7 @@ void MainWindow::on_addButton_clicked()
 
         this->transList.append(trans);
         this->enableAllInteractions();
-        ui->statusBar->showMessage(tr("Reflexión agregada a la cola de transformaciones."), 3000);
+        statusBar->showMessage(tr("Reflexión agregada a la cola de transformaciones."), 3000);
         return;
     }
 
@@ -179,13 +197,13 @@ void MainWindow::on_addButton_clicked()
         trans.dataOf.vScaling.scalePercent = factorText.toFloat(&valid);
         if (!valid)
         {
-            ui->statusBar->showMessage(tr("Factor de escalamiento no reconocido. Por favor ingresa un número real."), 5000);
+            statusBar->showMessage(tr("Factor de escalamiento no reconocido. Por favor ingresa un número real."), 5000);
         }
         else
         {
             ui->factorLineEdit->clear();
             this->transList.append(trans);
-            ui->statusBar->showMessage(tr("Escalación agregada a la cola de transformaciones."), 3000);
+            statusBar->showMessage(tr("Escalación agregada a la cola de transformaciones."), 3000);
         }
         this->enableAllInteractions();
         return;
@@ -204,73 +222,73 @@ void MainWindow::on_addButton_clicked()
 
         if (!valid1 || !valid2)
         {
-            ui->statusBar->showMessage(tr("Distancias de traslación no reconocidas. Por favor ingresa números reales."), 5000);
+            statusBar->showMessage(tr("Distancias de traslación no reconocidas. Por favor ingresa números reales."), 5000);
         }
         else
         {
             ui->xLineEdit->clear();
             ui->yLineEdit->clear();
             this->transList.append(trans);
-            ui->statusBar->showMessage(tr("Traslación agregada a la cola de transformaciones."), 3000);
+            statusBar->showMessage(tr("Traslación agregada a la cola de transformaciones."), 3000);
         }
         this->enableAllInteractions();
         return;
     }
 
-    ui->statusBar->showMessage(tr("Por favor, selecciona alguna transformación para agregar."), 5000);
+    statusBar->showMessage(tr("Por favor, selecciona alguna transformación para agregar."), 5000);
     this->enableAllInteractions();
 }
 
-void MainWindow::on_cleanParamButton_clicked()
+void SITVGWindow::on_cleanParamButton_clicked()
 {
     this->disableAllInteractions();
-    ui->statusBar->showMessage(tr("Parámetros limpiados."), 3000);
+    statusBar->showMessage(tr("Parámetros limpiados."), 3000);
     ui->factorLineEdit->clear();
     ui->xLineEdit->clear();
     ui->yLineEdit->clear();
     this->enableAllInteractions();
 }
 
-void MainWindow::on_cleanListButton_clicked()
+void SITVGWindow::on_cleanListButton_clicked()
 {
     if (transList.size() > 0)
     {
         this->disableAllInteractions();
-        ui->statusBar->showMessage(tr("La cola de transformaciones ha sido vaciada."), 3000);
+        statusBar->showMessage(tr("La cola de transformaciones ha sido vaciada."), 3000);
         transList.clear();
         this->enableAllInteractions();
     }
     else
     {
-        ui->statusBar->showMessage(tr("La lista ya está vacía."), 5000);
+        statusBar->showMessage(tr("La lista ya está vacía."), 5000);
     }
 }
 
-void MainWindow::on_applyButton_clicked()
+void SITVGWindow::on_applyButton_clicked()
 {
-    ui->statusBar->showMessage(tr("Funcionalidad implementada en un futuro próximo."), 8000);
+    statusBar->showMessage(tr("Funcionalidad implementada en un futuro próximo."), 8000);
 
     if (transList.size())
     {
         if (this->baseImage)
         {
             this->disableAllInteractions();
-            ui->statusBar->showMessage(tr("Aplicando transformaciones. Por favor espera, esto podría tardar un poco."));
+            statusBar->showMessage(tr("Aplicando transformaciones. Por favor espera, esto podría tardar un poco."));
             this->sendTransformations();
             this->enableAllInteractions();
         }
         else
         {
-            ui->statusBar->showMessage(tr("Todavía no se ha cargado una imagen para transformar."), 5000);
+            statusBar->showMessage(tr("Todavía no se ha cargado una imagen para transformar."), 5000);
         }
     }
     else
     {
-        ui->statusBar->showMessage(tr("Primero agrega las transformaciones por aplicar a la cola de transformaciones."), 5000);
+        statusBar->showMessage(tr("Primero agrega las transformaciones por aplicar a la cola de transformaciones."), 5000);
     }
 }
 
-void MainWindow::on_viewTransButtom_clicked()
+void SITVGWindow::on_viewTransButtom_clicked()
 {
     if (transImage)
     {
@@ -278,13 +296,13 @@ void MainWindow::on_viewTransButtom_clicked()
     }
     else
     {
-        ui->statusBar->showMessage(tr("Aún no se ha transformado la imagen."), 5000);
+        statusBar->showMessage(tr("Aún no se ha transformado la imagen."), 5000);
     }
 }
 
-void MainWindow::on_saveButton_clicked()
+void SITVGWindow::on_saveButton_clicked()
 {
-    ui->statusBar->showMessage(tr("Funcionalidaddisponible en una actualización futura."), 5000);
+    statusBar->showMessage(tr("Funcionalidaddisponible en una actualización futura."), 5000);
 
     /*// If a transformed image is available:
     if (transImage)
@@ -293,6 +311,6 @@ void MainWindow::on_saveButton_clicked()
     }
     else
     {
-        ui->statusBar->showMessage(tr("No hay una imagen transformada disponible para salvar."), 5000);
+        statusBar->showMessage(tr("No hay una imagen transformada disponible para salvar."), 5000);
     }*/
 }

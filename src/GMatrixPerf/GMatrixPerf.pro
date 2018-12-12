@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2018-11-20T15:50:23
+# Project created by QtCreator 2018-12-11T16:33:25
 #
 #-------------------------------------------------
 
@@ -8,7 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = SITVGVisor
+TARGET = GMatrixPerf
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -25,24 +25,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp \
-    sitvgloader.cpp \
-    sitvgdata.cpp \
-    sitvgviewer.cpp \
-    transformationlist.cpp
+        gmatrixperf.cpp
 
 HEADERS += \
-        mainwindow.h \
-    sitvgloader.h \
-    sitvgdata.h \
-    rgbcolor.h \
-    sitvgviewer.h \
-    transformationlist.h \
-    transformation.h
+        gmatrixperf.h
 
 FORMS += \
-        mainwindow.ui \
-    sitvgviewer.ui
-
-DISTFILES += \
-    sitvgplanning.txt
+        gmatrixperf.ui

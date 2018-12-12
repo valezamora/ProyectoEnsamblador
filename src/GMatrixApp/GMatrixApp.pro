@@ -25,10 +25,24 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        gmatrixapp.cpp
+        gmatrixapp.cpp \
+        sitvgloader.cpp \
+        sitvgdata.cpp \
+        sitvgviewer.cpp \
+        transformationlist.cpp \
+        sitvgwindow.cpp
 
 HEADERS += \
-        gmatrixapp.h
+        gmatrixapp.h \
+        sitvgloader.h \
+        sitvgdata.h \
+        rgbcolor.h \
+        sitvgviewer.h \
+        transformationlist.h \
+        transformation.h \
+        sitvgwindow.h
 
 FORMS += \
-        gmatrixapp.ui
+        gmatrixapp.ui \
+        sitvgviewer.ui \
+    sitvgwindow.ui

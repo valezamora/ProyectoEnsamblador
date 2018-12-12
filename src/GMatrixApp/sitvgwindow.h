@@ -1,29 +1,39 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef SITVGWINDOW_H
+#define SITVGWINDOW_H
 
-#include <QMainWindow>
+#include <QWidget>
 #include "sitvgdata.h"
 #include "sitvgloader.h"
 #include "sitvgviewer.h"
 #include <QString>
 #include <QFileDialog>
 #include "transformationlist.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string>
+#include <iostream>
+#include <cassert>
+
+#include <QStatusBar>
 
 namespace Ui {
-class MainWindow;
+class SITVGWindow;
 }
 
 /**
  * @brief Class for managing SITGV transformations.
  * @remarks Class to be converted to a non main window.
  */
-class MainWindow : public QMainWindow
+class SITVGWindow : public QWidget
 {
     Q_OBJECT
 
   private:
     /// User interface
-    Ui::MainWindow *ui;
+    Ui::SITVGWindow *ui;
 
     /// Input SITVG image
     SITVGViewer * baseImage;
@@ -37,9 +47,12 @@ class MainWindow : public QMainWindow
     /// True when most of the user interactible widgets are activated.
     bool enabledInteractions = false;
 
+    /// Window status bar
+    QStatusBar * statusBar;
+
   public:
-    explicit MainWindow(/*QString inputFilePath,*/ QWidget *parent = 0);
-    ~MainWindow();
+    explicit SITVGWindow(/*QString inputFilePath,*/ QWidget *parent = 0);
+    ~SITVGWindow();
 
 private slots: // Self explanatory widget interactions.
 
@@ -82,4 +95,4 @@ private:
     void sendTransformations();
 };
 
-#endif // MAINWINDOW_H
+#endif // SITVGWINDOW_H
