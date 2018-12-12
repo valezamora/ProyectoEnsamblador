@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>SITVGViewer</class>
- <widget class="QWidget" name="SITVGViewer">
+ <class>BitmapViewer</class>
+ <widget class="QWidget" name="BitmapViewer">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Imagenes vectoriales</string>
+   <string>Mapas de bits</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

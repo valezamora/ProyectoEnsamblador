@@ -19,7 +19,7 @@ struct VectScaling { float scalePercent; };
 struct VectTranslation { float xTranslating; float yTranslating; };
 struct MatBrightness { unsigned char brightnessChange; };
 // struct MatNegative {  };
-struct MatContrast { unsigned char contrastChange; };
+struct MatRedSat { unsigned char redSatChange; };
 
 
 /**
@@ -34,7 +34,7 @@ struct Transformation
         VectScaling vScaling;
         VectTranslation vTranslation;
         MatBrightness mBrightness;
-        MatContrast mContrast;
+        MatRedSat mRedSat;
     } dataOf;
 };
 

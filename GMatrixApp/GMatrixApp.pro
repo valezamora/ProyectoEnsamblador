@@ -30,7 +30,9 @@ SOURCES += \
         sitvgdata.cpp \
         sitvgviewer.cpp \
         transformationlist.cpp \
-        sitvgwindow.cpp
+        sitvgwindow.cpp \
+    bitmapwindow.cpp \
+    bitmapviewer.cpp
 
 HEADERS += \
         gmatrixapp.h \
@@ -40,9 +42,13 @@ HEADERS += \
         sitvgviewer.h \
         transformationlist.h \
         transformation.h \
-        sitvgwindow.h
+        sitvgwindow.h \
+    bitmapwindow.h \
+    bitmapviewer.h
 
 FORMS += \
         gmatrixapp.ui \
         sitvgviewer.ui \
-    sitvgwindow.ui
+    sitvgwindow.ui \
+    bitmapwindow.ui \
+    bitmapviewer.ui
