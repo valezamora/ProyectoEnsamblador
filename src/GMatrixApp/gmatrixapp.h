@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include "sitvgwindow.h"
-#include "bitmapwindow.h"
+//#include "bitmapwindow.h"
 
 namespace Ui {
 class GMatrixApp;
@@ -12,6 +12,10 @@ class GMatrixApp;
 class GMatrixApp : public QMainWindow
 {
     Q_OBJECT
+
+  private:
+    SITVGWindow * sitvgW = nullptr;
+    //BitmapWindow * bitmapW = nullptr;
 
   public:
     explicit GMatrixApp(QWidget *parent = 0);
@@ -25,6 +29,9 @@ class GMatrixApp : public QMainWindow
 
   private:
     Ui::GMatrixApp *ui;
+
+  public slots:
+    void endExecution();
 
 };
 
