@@ -107,34 +107,50 @@ void MainWindow::enableAllInteractions()
 void MainWindow::sendTransformations()
 {
     int type = 1; // Vectorial
+    bool success = false;
 
-    float * coordinates = nullptr;
+    float * coordsWithPadding = nullptr;
     unsigned noOfCoordinates = 0;
     int * transformations = nullptr;
     int noOfTransformations = 0;
 
     this->transImage = this->baseImage->newClone();
-    this->transImage->getDataForTransformation(coordinates, noOfCoordinates);
+    this->transImage->getDataForTransformation(coordsWithPadding, noOfCoordinates);
     this->transList.getDataForTransformation(transformations, noOfTransformations);
 
-    // envío de type, noOfTransformations, transformations, noOfCoordinates, Coordinates
-    /**     ############## Chisco pls aiuda ##############
-    write(&type, 4);
+    noOfCoordinates += noOfCoordinates % 16;
 
-    write(&noOfTransformations, 4);
-    write(transformations, 4*3*noOfTransformations);
+    //Send and receive data to and from kernel
+    int ret = 0, fd = open("/dev/ebbchar", O_RDWR); // Opens the device with read/write access
 
-    write(&noOfCoordinates, 4);
-    write(coordinates, 2*4*noOfCoordinates);
+    if (fd >= 0)
+    {
+        ret = write(fd, (char*)coordsWithPadding, 2*(noOfCoordinates*4) ); // Send the string to the LKM
+        if (ret >= 0)
+        {
+            ret = write(fd, (char*)transformations, noOfTransformations*4 ); // Send the string to the LKM
+            if (ret >= 0)
+            {
+                ret = read(fd, (char*)coordsWithPadding, noOfCoordinates*4); // Read the response from the LKM
 
+                if (ret < 0) {
+                    perror("Failed to read the message from the device.");
+                }
+                else
+                {
+                    success = true;
+                    this->transImage->applyTransformations(coordsWithPadding);
+                    this->transList.clear();
+                }
+            }
+        }
+    }
 
-    int * resultingCoords = read (...) // O se hace en el mismo arreglo?
-    this->transImage->applyTransformations(resultingCoords);
-    delete resultingCoords // Si se recibe en el mismo arreglo, no hay ni que crear este. Menos borrarlo.*/
+    if (!success)
+        ui->statusBar->showMessage(tr("Error al comunicarse con el dispositivo."), 5000);
 
-    this->transList.clear();
-    delete coordinates;
-    delete transformations;
+    delete [] coordsWithPadding;
+    delete [] transformations;
 }
 
 void MainWindow::on_changeFileButton_clicked()

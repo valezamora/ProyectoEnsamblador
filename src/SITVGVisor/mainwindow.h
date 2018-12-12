@@ -8,6 +8,14 @@
 #include <QString>
 #include <QFileDialog>
 #include "transformationlist.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string>
+#include <iostream>
+#include <cassert>
 
 namespace Ui {
 class MainWindow;

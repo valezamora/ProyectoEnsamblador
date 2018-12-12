@@ -27,7 +27,7 @@ class SITVGData
     short * figsVerticesAmounts = nullptr;
 
     /// Total amount of coordinates found in the image.
-    unsigned long long coordsAmount = 0; // Not part of the raw file.
+    unsigned coordsAmount = 0; // Not part of the raw file.
 
     /// Horizontal values for every coordinate in the image.
     float * xCoords = nullptr;
@@ -101,8 +101,10 @@ class SITVGData
     /**
      * @brief Get a copy of the coordinates in this SITVG image.
      * @details The first half of the array is for X values, while the second half
-     * is for the Y values. The size of the array is, therefore, twice the amount
-     * of coordinates in the image.
+     * is for the Y values. Aside from this, each half contains a trailing padding
+     * used to complete the size to a multiple of 64 bytes, or 16 floats.
+     * The size of the array is, therefore, twice the amount of the padded coordinates
+     * in the image.
      * @return Float array with the X values of the coordinates followed by the Y values.
      * @remarks The returned array must be deleted with the standard function delete [].
      */
@@ -111,11 +113,12 @@ class SITVGData
     /**
      * @brief Sets the coordinates to a copy of the ones used as argument.
      * @param xsThenYsArray Array that contains all of the new X values to set, followed
-     * by the new Y values.
-     * @remarks Size of xsThenYsArray must be at least twice of the amount of coordinates
-     * in the image.
+     * by a padding of zeros that complete a multiple of  bytes, then the new Y values
+     * and the same padding for the Y section.
+     * @remarks Size of xsThenYsArray must be at least twice of the amount of padded
+     * coordinates in the image.
      */
-    void setXsThenYs( const float * xsThenYsArray );
+    void setXsThenYs(const float * xsThenYsArray);
 
     /**
      * @brief Deletes all the data contained in the object, freeing dynamic memory.
