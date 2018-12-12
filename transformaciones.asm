@@ -61,13 +61,16 @@ for1:
 	; se guarda en i+4
 	mov r12, 4
 	add r12, rbx
-	mov r15, [rsi+r12]
+	mov r15, rsi
+	add r15, r12		; direccion del primer parametro
+
 	
 	;segundo parametro (r9)
 	; se guarga en i+8
 	mov r12, 8
 	add r12, rbx
-	mov r9, [rsi+r12]
+	mov r9, rsi
+	add r9, r12			; direccion del segundo parametro
 	
 	; inicio de la imagen (r8)
 	
@@ -83,7 +86,7 @@ for1:
 	cmp rax, 4
 	;je negativo
 	cmp rax, 5
-	;je contraste
+	;je saturacion
 	
 ;test para ver si faltan mas transformaciones	
 testFor1:
@@ -164,19 +167,24 @@ escalacion:
 	; Se utiliza AVX, se procesan 256 bits a la vez, de 8 en 8 puntos en formato punto flotante de 32 bits.
 	
 	;get inicio de puntos y (r11)
-	mov r14, rdx
-	mov r11, [r15+r14]
+	mov r11, r10	; cantidad de puntos
+	mov rax, 4
+	mul r11
+	mov r11, rax	;distania del inicio del vector
+	mov r13, r8
+	add r11, r13		; posicion inicial de puntos y
+	
 	
 	; crea vector de x y vector de y para poder hacer las operaciones en paquetes
 	
 	; parametro x: poner el valor de r15  (ymm0)
 	vpbroadcastd ymm0, [r15]
 	
-	; parametro y: poner el valor de r9 64 veces (ymm1)
+	; parametro y: poner el valor de r9 (ymm1)
 	vpbroadcastd ymm1, [r9]
 	
 	;calcular cantidad de operaciones requeridas 
-	mov rax, rdx
+	mov rax, r10
 	mov r13, 8
 	div r13			; (total de puntos en un eje/8)
 	mov r14, rax
@@ -227,11 +235,15 @@ escalacion:
 ;--------------------------------------------------------------------------------------------
 ; id = 2
 traslacion:
-	; Se utiliza AVX, se procesan 256 bits a la vez, de 64 en 64 puntos en formato punto flotante de 32 bits.
+	; Se utiliza AVX, se procesan 256 bits a la vez, de 8 en 8 puntos en formato punto flotante de 32 bits.
 	
 	;get inicio de puntos y (r11)
-	mov r14, rdx
-	mov r11, [r15+r14]
+	mov r11, r10	; cantidad de puntos
+	mov rax, 4
+	mul r11
+	mov r11, rax	;distania del inicio del vector
+	mov r13, r8
+	add r11, r13		; posicion inicial de puntos y
 	
 	; crea vector de x y vector de y para poder hacer las operaciones en paquetes
 	
@@ -292,8 +304,8 @@ traslacion:
 
 
 ; ---------------- Transformaciones de mapas de bits --------------------
-; Para estas se utilizan instrucciones AVX de enteros. 
-; Se procesan de 256 en 256 porque se utilizan enteros de 1 byte 
+; Para estas se utilizan instrucciones AVX de numeros de 1 byte. 
+; Se procesan de 32 en 32 porque se utilizan enteros de 1 byte 
 
 ; id = 3
 brillo:
@@ -309,7 +321,7 @@ brillo:
 	mov r14, rcx
 	mul r14		; cantidad total de puntos (cada uno de 24 bits)
 	mov r13, 32
-	div r13 	; total de operaciones requeridas (total puntos/256)
+	div r13 	; total de operaciones requeridas (total puntos/32)
 	mov r13, rax
 	
 	jmp tesForBrillo
@@ -381,21 +393,24 @@ negativo:
 ;--------------------------------------------------------------------------------------------
 	
 ; id = 5
-contraste:
-; Se genera vector que contiene el parametro  (64 255's) se guarda en ymm0
-	vpbroadcastb ymm0, [r15]
+saturacion:
 	
 	; Ciclo para contraste
 	
 	; contador
 	mov r11, 0		; contador
 	mov r12, 0 		; traslacion dentro del vector de pixeles
-	mov rax, rdx
-	mov r14, rcx
+	mov rax, r10	; cantidad x
+	mov r14, rcx	; cantidad y
 	mul r14			; cantidad total de puntos (cada uno de 24 bits)
-	mov r13, 32 	; total de operaciones requeridas (total puntos/32)
+	mov r13, 10 	; total de operaciones requeridas (total puntos/10) se procesa de 10 en 10 pixeles
 	div r13
 	mov r13, rax
+	
+	
+	; Se genera vector que contiene el parametro 
+	vpbroadcastb ymm0, byte [r15]
+	
 	
 	jmp testForContraste
 	
@@ -411,7 +426,7 @@ contraste:
 		
 		; aumentar contador
 		inc r11
-		add r12, 100h 	;(sumar 256)
+		add r12, 240 	;(sumar 240 = 10 pixeles de 24 bits cada uno)
 	
 	testForContraste:
 		cmp r11, r13
