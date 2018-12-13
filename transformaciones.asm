@@ -12,13 +12,12 @@ section .data
 	
 section .bss
 
-
 section .text
 
 transformarImagen:
 	;pila
-
-	mov ebp, esp
+	push rbp
+	mov rbp, rsp
 	
 	; registros callee saved
 	push rbx
@@ -47,7 +46,7 @@ for1:
 	; obtiene tipo de transformacion 
 
 	mov rax, 12		; guarda un 12 
-	mul rbx			; guarda un 12*i en rax
+	mul rbx				; guarda un 12*i en rax
 	mov r12, rax
 	mov r13, rsi
 	add r13, r12
@@ -74,11 +73,14 @@ for1:
 	add r9, r12			; direccion del segundo parametro
 	
 	; inicio de la imagen (r8)
+	mov word rax, [rsi]
+	
+	comparacion:
 	
 	;compara rax para saltar a la ejecucion de la transformacion
 	cmp rax, 0
 	je reflexion
-	cmp rax, 1
+	cmp rsi, 1
 	;je escalacion
 	cmp rax, 2
 	;je traslacion
@@ -490,4 +492,5 @@ fin:
 	pop r12
 	pop rbx
 	
+	pop rbp
 	ret
