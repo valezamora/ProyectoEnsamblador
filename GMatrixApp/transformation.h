@@ -11,7 +11,7 @@ enum transformationId {
 
     matBrightness,
     matNegative,
-    matContrast
+    matRedSat
 };
 
 // struct VectReflexion {  };

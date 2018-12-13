@@ -49,11 +49,8 @@ bool BitmapWindow::setInputFile()
             this->transImage = nullptr;
         }
 
-        // Image data manipulation
-        /** SITVGData data = std::move( SITVGLoader::readSitvgFile(pathName.toUtf8().constData()) );
+        this->baseImage = new BitmapViewer(&pathName);
 
-        this->baseImage = new SITVGViewer( std::move(data), QString("Imagen inicial"), nullptr );
-        */
 
         // Show the filename in the label for it.
         ui->fileNameLabel->setText(pathName);
@@ -110,29 +107,27 @@ void BitmapWindow::sendTransformations()
 {
     bool success = false;
 
-    float * coordsWithPadding = nullptr;
-    unsigned noOfCoordinates = 0;
+    char * colorsWithPadding = nullptr;
+    unsigned cWPSize = 0;
     int * transformations = nullptr;
     int noOfTransformations = 0;
 
-    //this->transImage = this->baseImage->newClone();
-    //this->transImage->getDataForTransformation(coordsWithPadding, noOfCoordinates);
+    this->transImage = this->baseImage->newClone();
+    this->transImage->getDataForTransformation(colorsWithPadding, cWPSize);
     this->transList.getDataForTransformation(transformations, noOfTransformations);
-
-    noOfCoordinates += noOfCoordinates % 16;
 
     //Send and receive data to and from kernel
     int ret = 0, fd = open("/dev/ebbchar", O_RDWR); // Opens the device with read/write access
 
     if (fd >= 0)
     {
-        ret = write(fd, (char*)coordsWithPadding, 2*(noOfCoordinates*4) ); // Send the string to the LKM
+        ret = write(fd, (char*)colorsWithPadding, cWPSize); // Send the string to the LKM
         if (ret >= 0)
         {
-            ret = write(fd, (char*)transformations, noOfTransformations*4 ); // Send the string to the LKM
+            ret = write(fd, (char*)transformations, noOfTransformations*4); // Send the string to the LKM
             if (ret >= 0)
             {
-                ret = read(fd, (char*)coordsWithPadding, noOfCoordinates*4); // Read the response from the LKM
+                ret = read(fd, (char*)colorsWithPadding, cWPSize); // Read the response from the LKM
 
                 if (ret < 0) {
                     perror("Failed to read the message from the device.");
@@ -140,7 +135,7 @@ void BitmapWindow::sendTransformations()
                 else
                 {
                     success = true;
-                    //this->transImage->applyTransformations(coordsWithPadding);
+                    this->transImage->applyTransformations(colorsWithPadding);
                     this->transList.clear();
                 }
             }
@@ -150,7 +145,7 @@ void BitmapWindow::sendTransformations()
     if (!success)
         statusBar->showMessage(tr("Error al comunicarse con el dispositivo."), 5000);
 
-    delete [] coordsWithPadding;
+    delete [] colorsWithPadding;
     delete [] transformations;
 }
 
@@ -175,29 +170,61 @@ void BitmapWindow::on_viewBaseButton_clicked()
 void BitmapWindow::on_addButton_clicked()
 {
     this->disableAllInteractions();
-/*
-    if (ui->scalingSelect->isChecked())
+
+    if (ui->brightSelect->isChecked())
     {
         Transformation trans;
-        trans.id = vectScaling;
+        trans.id = matBrightness;
 
-        const QString& factorText = this->ui->factorLineEdit->text();
+        const QString & brText = ui->brightLineEdit->text();
         bool valid = true;
-        trans.dataOf.vScaling.scalePercent = factorText.toFloat(&valid);
+        trans.dataOf.mBrightness.brightnessChange = brText.toFloat(&valid);
         if (!valid)
         {
-            statusBar->showMessage(tr("Factor de escalamiento no reconocido. Por favor ingresa un número real."), 5000);
+            statusBar->showMessage(tr("Factor de cambio de brillo no reconocido. Por favor ingresa un número entero."), 5000);
         }
         else
         {
-            ui->factorLineEdit->clear();
+            ui->brightLineEdit->clear();
             this->transList.append(trans);
-            statusBar->showMessage(tr("Escalación agregada a la cola de transformaciones."), 3000);
+            statusBar->showMessage(tr("Cambio de brillo agregado a la cola de transformaciones"), 3000);
         }
         this->enableAllInteractions();
         return;
     }
-*/
+
+    if (ui->negativeSelect->isChecked())
+    {
+        Transformation trans;
+        trans.id = matNegative;
+        this->transList.append(trans);
+        statusBar->showMessage(tr("Cambio de color a negativo agregado a la cola de transformaciones"), 3000);
+        this->enableAllInteractions();
+        return;
+    }
+
+    if (ui->redSelect->isChecked())
+    {
+        Transformation trans;
+        trans.id = matRedSat;
+
+        const QString & rsText = ui->redLineEdit->text();
+        bool valid = true;
+        trans.dataOf.mRedSat.redSatChange = rsText.toFloat(&valid);
+        if (!valid)
+        {
+            statusBar->showMessage(tr("Factor de cambio de saturación roja no reconocido. Por favor ingresa un número entero."), 5000);
+        }
+        else
+        {
+            ui->redLineEdit->clear();
+            this->transList.append(trans);
+            statusBar->showMessage(tr("Cambio de saturación roja agregado a la cola de transformaciones"), 3000);
+        }
+        this->enableAllInteractions();
+        return;
+    }
+
     statusBar->showMessage(tr("Por favor, selecciona alguna transformación para agregar."), 5000);
     this->enableAllInteractions();
 }
@@ -226,7 +253,7 @@ void BitmapWindow::on_cleanListButton_clicked()
     }
 }
 
-void BitmapWindow::on_applyButton_clicked()
+void BitmapWindow::on_applyButton_2_clicked()
 {
     if (transList.size())
     {

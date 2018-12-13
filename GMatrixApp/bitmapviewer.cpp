@@ -10,10 +10,11 @@ BitmapViewer::BitmapViewer(QString * filePath, QWidget *parent) :
     ui->setupUi(this);
     if (filePath)
     {
-        bitmap = readImage(filePath);
+        bitmap = readImage(*filePath);
         paintBitmap();
     }
     ui->graphicsView->setScene(scene);
+    setWindowTitle("Imagen base");
 }
 
 BitmapViewer::~BitmapViewer()
@@ -36,7 +37,7 @@ BitmapViewer *BitmapViewer::newClone() const
     return clone;
 }
 
-void BitmapViewer::getDataForTransformation(float *&colors, unsigned &noOfBytes) const
+void BitmapViewer::getDataForTransformation(char *&colors, unsigned &noOfBytes) const
 {
     colors = new char [colorsArraySize];
     for (int i = 0; i < colorsArraySize; ++i)
@@ -55,7 +56,7 @@ QPixmap BitmapViewer::readImage(QString filePath){
 
     for(int i = 0; i < image.height(); ++i) // to get each line
     {
-        QRgb rgb = (QRgb)image.scanLine(i); // get line at i
+        QRgb * rgb = (QRgb*)image.scanLine(i); // get line at i
         for(int j = 0; j < image.width(); ++j) // iterate over each pixel in each line
         {
             reds[i]<<qRed(*rgb);
@@ -92,10 +93,11 @@ void BitmapViewer::paintBitmap(){
     scene->addPixmap(bitmap);
 }
 
-void BitmapViewer::applyTransformations(const float * colorsArray)
+void BitmapViewer::applyTransformations(const char * colorsArray)
 {
     //
-    // Aplicar las transformaciones al arreglo de colores.
+    // Aplicar las transformaciones al arreglo de colores utilizando el argumento.
     //
     paintBitmap();
+    setWindowTitle("Imagen transformada");
 }

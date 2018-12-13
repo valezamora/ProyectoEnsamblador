@@ -54,7 +54,7 @@ void TransformationList::getDataForTransformation(int *&transformations, int &no
             counter += rawParamSize;
             break;
 
-        case MatRedSat:
+        case matRedSat:
             memcpy(transformations + counter, &this->transformations[trans].dataOf.mRedSat.redSatChange, 1);
             counter += rawParamSize;
             break;
@@ -113,8 +113,8 @@ QVariant TransformationList::data(const QModelIndex &index, int role) const
         case matNegative:
             dataStr += "Cambio de colores por sus negativos.";
             break;
-        case matContrast:
-            dataStr += "Cambio de contraste por " + QString::number((int)trans.dataOf.mContrast.contrastChange);
+        case matRedSat:
+            dataStr += "Cambio de saturación de rojo por " + QString::number((int)trans.dataOf.mRedSat.redSatChange);
             break;
 
         default:

@@ -31,7 +31,7 @@ class BitmapViewer : public QWidget
     int colorsArraySize = 0;
 
   public:
-    explicit BitmapViewer(QString filePath, QWidget *parent = 0);
+    explicit BitmapViewer(QString * filePath, QWidget *parent = 0);
     ~BitmapViewer();
 
     /**
@@ -45,7 +45,7 @@ class BitmapViewer : public QWidget
      * @param colors Pointer in which the colors vector is put.
      * @param noOfColors Unsigned integer in which the amount of colors is put.
      */
-    void getDataForTransformation(float * & colors, unsigned & noOfBytes) const;
+    void getDataForTransformation(char *&colors, unsigned & noOfBytes) const;
 
     /**
      * @brief Modifies the images data to assume the transformed colors
@@ -53,7 +53,7 @@ class BitmapViewer : public QWidget
      * @remarks The transformed array must be derived from this image's data.
      * It must also be deallocated from dynamic memory afterwards.
      */
-    void applyTransformations(const float * colorsArray);
+    void applyTransformations(const char *colorsArray);
 
     /**
      * @brief Opens and reads the image at filePath.
