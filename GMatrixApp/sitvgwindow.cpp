@@ -108,6 +108,7 @@ void SITVGWindow::enableAllInteractions()
 
 void SITVGWindow::sendTransformations()
 {
+    if (this->transImage) delete this->transImage;
     bool success = false;
 
     float * coordsWithPadding = nullptr;
@@ -126,13 +127,16 @@ void SITVGWindow::sendTransformations()
 
     if (fd >= 0)
     {
-        ret = write(fd, (char*)coordsWithPadding, 2*(noOfCoordinates*4) ); // Send the string to the LKM
+        // Send the string to the LKM
+        ret = write(fd, (char*)coordsWithPadding, 2*(noOfCoordinates*sizeof(int)) ); // 2, because there is an X and a Y.
         if (ret >= 0)
         {
-            ret = write(fd, (char*)transformations, noOfTransformations*4 ); // Send the string to the LKM
+            // Send the string to the LKM
+            ret = write(fd, (char*)transformations, noOfTransformations*sizeof(Transformation));
             if (ret >= 0)
             {
-                ret = read(fd, (char*)coordsWithPadding, noOfCoordinates*4); // Read the response from the LKM
+                // Read the response from the LKM
+                ret = read(fd, (char*)coordsWithPadding, 2*(noOfCoordinates*sizeof(int)) ); // 2, because there is an X and a Y.
 
                 if (ret < 0) {
                     perror("Failed to read the message from the device.");
@@ -175,10 +179,14 @@ void SITVGWindow::on_viewBaseButton_clicked()
 void SITVGWindow::on_addButton_clicked()
 {
     this->disableAllInteractions();
+
     if (ui->reflectionSelect->isChecked())
     {
-        Transformation trans;
+        const Transformation trans = Transformation (vectReflexion);
+        /*
         trans.id = vectReflexion;
+        trans.floatParam(0) = 0;
+        trans.floatParam(1) = 0;*/
 
         this->transList.append(trans);
         this->enableAllInteractions();
@@ -188,18 +196,17 @@ void SITVGWindow::on_addButton_clicked()
 
     if (ui->scalingSelect->isChecked())
     {
-        Transformation trans;
-        trans.id = vectScaling;
-
         const QString& factorText = this->ui->factorLineEdit->text();
         bool valid = true;
-        trans.dataOf.vScaling.scalePercent = factorText.toFloat(&valid);
+        float scalingFactor = factorText.toFloat(&valid);
+
         if (!valid)
         {
             statusBar->showMessage(tr("Factor de escalamiento no reconocido. Por favor ingresa un número real."), 5000);
         }
         else
         {
+            const Transformation trans = Transformation(vectScaling, scalingFactor);
             ui->factorLineEdit->clear();
             this->transList.append(trans);
             statusBar->showMessage(tr("Escalación agregada a la cola de transformaciones."), 3000);
@@ -210,14 +217,9 @@ void SITVGWindow::on_addButton_clicked()
 
     if (ui->translationSelect->isChecked())
     {
-        Transformation trans;
-        trans.id = vectTranslation;
-
-        const QString& xText = this->ui->xLineEdit->text();
-        const QString& yText = this->ui->yLineEdit->text();
+        const QString& xText = this->ui->xLineEdit->text(), yText = this->ui->yLineEdit->text();
         bool valid1 = true, valid2 = true;
-        trans.dataOf.vTranslation.xTranslating = xText.toFloat(&valid1);
-        trans.dataOf.vTranslation.yTranslating = yText.toFloat(&valid2);
+        float xFactor = xText.toFloat(&valid1), yFactor = yText.toFloat(&valid2);
 
         if (!valid1 || !valid2)
         {
@@ -225,6 +227,7 @@ void SITVGWindow::on_addButton_clicked()
         }
         else
         {
+            const Transformation trans (vectTranslation, xFactor, yFactor);
             ui->xLineEdit->clear();
             ui->yLineEdit->clear();
             this->transList.append(trans);

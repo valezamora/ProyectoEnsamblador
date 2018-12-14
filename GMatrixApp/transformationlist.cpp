@@ -9,61 +9,19 @@ TransformationList::~TransformationList()
     this->transformations.clear();
 }
 
-void TransformationList::getDataForTransformation(int *&transformations, int &noOfTransformations) const
+// New version
+void TransformationList::getDataForTransformation(int * & transformations, int &noOfTransformations) const
 {
-    const int intSize = 4;
-    const int rawParamSize = 8;
-
     noOfTransformations = this->transformations.size();
-    transformations = new int [3*noOfTransformations];
+    Transformation * trArray = new Transformation[noOfTransformations];
 
-    int counter = 0;
-
-    for (int trans = 0; trans < noOfTransformations; ++trans)
+    // Copies every transformation, one by one
+    for (int trIndex = 0; trIndex < noOfTransformations; ++trIndex)
     {
-        // Copies the transformation id
-        memcpy(transformations + counter, &this->transformations[trans].id, intSize);
-        counter += intSize;
-
-        switch (this->transformations[trans].id)
-        {
-        case vectReflexion:
-            // Nothing else is copied.
-            counter += rawParamSize;
-            break;
-
-        case vectScaling:
-            memcpy(transformations + counter, &this->transformations[trans].dataOf.vScaling.scalePercent, intSize);
-            counter += rawParamSize;
-            break;
-
-        case vectTranslation:
-            memcpy(transformations + counter, &this->transformations[trans].dataOf.vTranslation.xTranslating, intSize);
-            counter += intSize;
-            memcpy(transformations + counter, &this->transformations[trans].dataOf.vTranslation.yTranslating, intSize);
-            counter += intSize;
-            break;
-
-        case matBrightness:
-            memcpy(transformations + counter, & this->transformations[trans].dataOf.mBrightness.brightnessChange, 1);
-            counter += rawParamSize;
-            break;
-
-        case matNegative:
-            // Noting else is copied.
-            counter += rawParamSize;
-            break;
-
-        case matRedSat:
-            memcpy(transformations + counter, &this->transformations[trans].dataOf.mRedSat.redSatChange, 1);
-            counter += rawParamSize;
-            break;
-
-        default:
-            assert(0);
-            break;
-        }
+        trArray [trIndex] = this->transformations[trIndex];
     }
+
+    transformations = (int *) trArray;
 }
 
 void TransformationList::clear()
@@ -82,6 +40,7 @@ int TransformationList::rowCount(const QModelIndex &parent) const
     return fetchedRowCount;
 }
 
+// New version
 QVariant TransformationList::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid()) {return QVariant();}
@@ -100,31 +59,29 @@ QVariant TransformationList::data(const QModelIndex &index, int role) const
             dataStr += "Reflexión";
             break;
         case vectScaling:
-            dataStr += "Escalación por " + QString::number(trans.dataOf.vScaling.scalePercent);
+            dataStr += "Escalación por " + QString::number(trans.floatParam(1));
             break;
         case vectTranslation:
-            dataStr += "Traslación por " + QString::number(trans.dataOf.vTranslation.xTranslating) + " en x ";
-            dataStr += "y " + QString::number(trans.dataOf.vTranslation.yTranslating) + " en y";
+            dataStr += "Traslación por " + QString::number(trans.floatParam(1)) + " en x ";
+            dataStr += "y " + QString::number(trans.floatParam(2)) + " en y";
             break;
 
         case matBrightness:
-            dataStr += "Cambio de brillo por " + QString::number((int)trans.dataOf.mBrightness.brightnessChange);
+            dataStr += "Cambio de brillo por " + QString::number(trans.intParam(1));
             break;
         case matNegative:
             dataStr += "Cambio de colores por sus negativos.";
             break;
-        case matRedSat:
-            dataStr += "Cambio de saturación de rojo por " + QString::number((int)trans.dataOf.mRedSat.redSatChange);
+        case matContrast:
+            dataStr += "Cambio de saturación de rojo por " + QString::number(trans.intParam(1));
             break;
 
         default:
             dataStr = "Transformación desconocida... Lo sentimos :(";
             break;
         }
-
         return dataStr;
     }
-
     return QVariant();
 }
 

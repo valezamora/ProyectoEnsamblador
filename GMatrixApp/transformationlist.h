@@ -29,7 +29,7 @@ class TransformationList : public QAbstractListModel
      * @brief Append a transformation to the list.
      * @param Transformation to be appended.
      */
-    inline void append (Transformation & trans)
+    inline void append (const Transformation & trans)
     {
         transformations.append(trans);
         this->fetchMore(QModelIndex());

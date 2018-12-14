@@ -58,7 +58,7 @@ class BitmapWindow : public QWidget
 
     void on_cleanListButton_clicked();
 
-    void on_applyButton_2_clicked();
+    void on_applyButton_clicked();
 
     void on_viewTransButtom_clicked();
 

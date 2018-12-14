@@ -164,9 +164,9 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
-            <widget class="QRadioButton" name="redSelect">
+            <widget class="QRadioButton" name="contrastSelect">
              <property name="text">
-              <string>Saturación de rojo</string>
+              <string>Ajuste de contraste</string>
              </property>
             </widget>
            </item>
@@ -178,7 +178,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="redLineEdit"/>
+            <widget class="QLineEdit" name="contrastEdit"/>
            </item>
            <item>
             <spacer name="horizontalSpacer_8">
@@ -297,7 +297,7 @@ parámetros</string>
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="applyButton_2">
+      <widget class="QPushButton" name="applyButton">
        <property name="text">
         <string>Aplicar transformaciones</string>
        </property>

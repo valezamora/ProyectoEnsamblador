@@ -32,7 +32,8 @@ SOURCES += \
         transformationlist.cpp \
         sitvgwindow.cpp \
     bitmapwindow.cpp \
-    bitmapviewer.cpp
+    bitmapviewer.cpp \
+    transformation.cpp
 
 HEADERS += \
         gmatrixapp.h \

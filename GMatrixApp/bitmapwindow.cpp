@@ -66,7 +66,7 @@ void BitmapWindow::disableAllInteractions()
     this->enabledInteractions = false;
 
     ui->addButton->setEnabled(false);
-    ui->applyButton_2->setEnabled(false);
+    ui->applyButton->setEnabled(false);
     ui->changeFileButton->setEnabled(false);
     ui->cleanListButton->setEnabled(false);
     ui->cleanParamButton->setEnabled(false);
@@ -76,10 +76,10 @@ void BitmapWindow::disableAllInteractions()
 
     ui->brightSelect->setEnabled(false);
     ui->negativeSelect->setEnabled(false);
-    ui->redSelect->setEnabled(false);
+    ui->contrastSelect->setEnabled(false);
 
     ui->brightLineEdit->setEnabled(false);
-    ui->negativeSelect->setEnabled(false);
+    ui->contrastEdit->setEnabled(false);
 }
 
 void BitmapWindow::enableAllInteractions()
@@ -87,7 +87,7 @@ void BitmapWindow::enableAllInteractions()
     this->enabledInteractions = true;
 
     ui->addButton->setEnabled(true);
-    ui->applyButton_2->setEnabled(true);
+    ui->applyButton->setEnabled(true);
     ui->changeFileButton->setEnabled(true);
     ui->cleanListButton->setEnabled(true);
     ui->cleanParamButton->setEnabled(true);
@@ -97,10 +97,10 @@ void BitmapWindow::enableAllInteractions()
 
     ui->brightSelect->setEnabled(true);
     ui->negativeSelect->setEnabled(true);
-    ui->redSelect->setEnabled(true);
+    ui->contrastSelect->setEnabled(true);
 
     ui->brightLineEdit->setEnabled(true);
-    ui->negativeSelect->setEnabled(true);
+    ui->contrastEdit->setEnabled(true);
 }
 
 void BitmapWindow::sendTransformations()
@@ -124,7 +124,7 @@ void BitmapWindow::sendTransformations()
         ret = write(fd, (char*)colorsWithPadding, cWPSize); // Send the string to the LKM
         if (ret >= 0)
         {
-            ret = write(fd, (char*)transformations, noOfTransformations*4); // Send the string to the LKM
+            ret = write(fd, (char*)transformations, noOfTransformations*sizeof(Transformation)); // Send the string to the LKM
             if (ret >= 0)
             {
                 ret = read(fd, (char*)colorsWithPadding, cWPSize); // Read the response from the LKM
@@ -173,18 +173,16 @@ void BitmapWindow::on_addButton_clicked()
 
     if (ui->brightSelect->isChecked())
     {
-        Transformation trans;
-        trans.id = matBrightness;
-
         const QString & brText = ui->brightLineEdit->text();
         bool valid = true;
-        trans.dataOf.mBrightness.brightnessChange = brText.toFloat(&valid);
+        int brValue = (brText.toInt(&valid) % 256);
         if (!valid)
         {
             statusBar->showMessage(tr("Factor de cambio de brillo no reconocido. Por favor ingresa un número entero."), 5000);
         }
         else
         {
+            Transformation trans = Transformation(matBrightness, brValue);
             ui->brightLineEdit->clear();
             this->transList.append(trans);
             statusBar->showMessage(tr("Cambio de brillo agregado a la cola de transformaciones"), 3000);
@@ -195,31 +193,28 @@ void BitmapWindow::on_addButton_clicked()
 
     if (ui->negativeSelect->isChecked())
     {
-        Transformation trans;
-        trans.id = matNegative;
+        Transformation trans = Transformation(matNegative);
         this->transList.append(trans);
         statusBar->showMessage(tr("Cambio de color a negativo agregado a la cola de transformaciones"), 3000);
         this->enableAllInteractions();
         return;
     }
 
-    if (ui->redSelect->isChecked())
+    if (ui->contrastSelect->isChecked())
     {
-        Transformation trans;
-        trans.id = matRedSat;
-
-        const QString & rsText = ui->redLineEdit->text();
+        const QString & contText = ui->contrastEdit->text();
         bool valid = true;
-        trans.dataOf.mRedSat.redSatChange = rsText.toFloat(&valid);
+        int contValue = contText.toFloat(&valid);
         if (!valid)
         {
-            statusBar->showMessage(tr("Factor de cambio de saturación roja no reconocido. Por favor ingresa un número entero."), 5000);
+            statusBar->showMessage(tr("Factor de cambio de contraste no reconocido. Por favor ingresa un número entero."), 5000);
         }
         else
         {
-            ui->redLineEdit->clear();
+            Transformation trans = Transformation(matContrast, contValue);
+            ui->contrastEdit->clear();
             this->transList.append(trans);
-            statusBar->showMessage(tr("Cambio de saturación roja agregado a la cola de transformaciones"), 3000);
+            statusBar->showMessage(tr("Cambio de contraste agregado a la cola de transformaciones"), 3000);
         }
         this->enableAllInteractions();
         return;
@@ -234,7 +229,7 @@ void BitmapWindow::on_cleanParamButton_clicked()
     this->disableAllInteractions();
     statusBar->showMessage(tr("Parámetros limpiados."), 3000);
     ui->brightLineEdit->clear();
-    ui->redLineEdit->clear();
+    ui->contrastEdit->clear();
     this->enableAllInteractions();
 }
 
@@ -253,7 +248,7 @@ void BitmapWindow::on_cleanListButton_clicked()
     }
 }
 
-void BitmapWindow::on_applyButton_2_clicked()
+void BitmapWindow::on_applyButton_clicked()
 {
     if (transList.size())
     {
