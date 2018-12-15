@@ -156,7 +156,7 @@ reflexion:
 	
 		; aumentar contador
 		inc r12
-		add r13, 100h		; aumenta la cantidad de bits que ya se utilizaron (256 bits = 8 puntos)
+		add r13, 20h		; aumenta la cantidad de bits que ya se utilizaron (256 bits = 8 puntos)
 	
 	testForReflexion:
 	; compara contador (r12) con cantidad de puntos (rax)
@@ -234,7 +234,7 @@ escalacion:
 		
 		; aumentar contador
 		inc r12
-		add r13, 100h		; aumenta la cantidad de bits que ya se utilizaron (256)
+		add r13, 20h		; aumenta la cantidad de bits que ya se utilizaron (256)
 		
 	testForEscalacion:
 		; compara contador (r12) con cantidad de puntos (r14)
@@ -312,7 +312,7 @@ traslacion:
 		
 		; aumentar contador
 		inc r12
-		add r13, 100h		; aumenta la cantidad de bits que ya se utilizaron (256)
+		add r13, 20h		; aumenta la cantidad de bits que ya se utilizaron (256)
 		
 	testForTraslacion:
 		; compara contador (r12) con cantidad de puntos (r14)
