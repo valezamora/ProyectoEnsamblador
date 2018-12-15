@@ -146,13 +146,13 @@ reflexion:
 	
 	forReflexion:
 		; mueve parte del vector de datos x a ymm0
-		vmovaps ymm0, [r8+r13] 
+		vmovups ymm0, [r8+r13] 
 		;mueve parte del vector de datos y a ymm1
-		vmovaps ymm1, [r11+r13]
+		vmovups ymm1, [r11+r13]
 		
 		; guarda invertidos los puntos
-		vmovaps  [r8+r13], ymm1
-		vmovaps  [r11+r13], ymm0
+		vmovups  [r8+r13], ymm1
+		vmovups  [r11+r13], ymm0
 	
 		; aumentar contador
 		inc r12
@@ -174,8 +174,11 @@ escalacion:
 	; Se utiliza AVX, se procesan 256 bits a la vez, de 8 en 8 puntos en formato punto flotante de 32 bits.
 	
 	;get inicio de puntos y (r11)
-	mov r11, r10	; cantidad de puntos
-	mov rax, 4
+	mov rax, r10
+	mov r13, 2
+	div r13	
+
+	mov r11, 4
 	mul r11
 	mov r11, rax	;distania del inicio del vector
 	mov r13, r8
@@ -193,7 +196,6 @@ escalacion:
 	vcvtdq2ps ymm1, ymm1		; convertir int a float
 	
 	;calcular cantidad de operaciones requeridas 
-	;calcular cantidad de operaciones requeridas 
 	mov rax, r10
 	mov r13, 2
 	div r13			; divide entre 2 el total de coordenadas para tener total de puntos
@@ -202,7 +204,6 @@ escalacion:
 	div r13			; (total de puntos en un eje/8)
 	mov r14, rax
 
-	
 	; contador (r12)
 	mov r12, 0
 	mov r13, 0
@@ -214,22 +215,22 @@ escalacion:
 	;ciclo para leer los valores y sumarles el parametro en x y y
 	forEscalacion:
 		; mueve parte del vector de datos x a ymm2
-		vmovaps ymm2,  [r8+r13] 
+		vmovups ymm2,  [r8+r13] 
 		
 		; multiplicacion
 		vmulps ymm4,ymm0,ymm2
 		
 		; guarda resultado de vuelta al vector
-		vmovaps  [r8+r13], ymm4
+		vmovups  [r8+r13], ymm4
 		
 		; mueve parte del vector de datos y a ymm3
-		vmovaps ymm2, [r11+r13] 
+		vmovups ymm2, [r11+r13] 
 
 		; multiplicacion 
 		vmulps ymm4,ymm1,ymm3
 	
 		; guarda resultado de vuelta al vector
-		vmovaps [r11+r13],ymm4
+		vmovups [r11+r13],ymm4
 		
 		; aumentar contador
 		inc r12
@@ -252,10 +253,13 @@ traslacion:
 	; Se utiliza AVX, se procesan 256 bits a la vez, de 8 en 8 puntos en formato punto flotante de 32 bits.
 	
 	;get inicio de puntos y (r11)
-	mov r11, r10	; cantidad de puntos
-	mov rax, 4
+	mov rax, r10
+	mov r13, 2
+	div r13	
+
+	mov r11, 4
 	mul r11
-	mov r11, rax	;distania del inicio del vector
+	mov r11, rax		; distancia del inicio del vector
 	mov r13, r8
 	add r11, r13		; posicion inicial de puntos y
 	
@@ -270,11 +274,10 @@ traslacion:
 	vcvtdq2ps ymm1, ymm1		; convertir int a float
 	
 	
-	;calcular cantidad de operaciones requeridas 
+	;calcular cantidad de operaciones requeridas (r14)
 	mov rax, r10
 	mov r13, 2
 	div r13			; divide entre 2 el total de coordenadas para tener total de puntos
-	
 	mov r13, 8
 	div r13			; (total de puntos en un eje/8)
 	mov r14, rax
@@ -290,22 +293,22 @@ traslacion:
 	;ciclo para leer los valores y sumarles el parametro en x y y
 	forTraslacion:
 		; mueve parte del vector de datos x a ymm2
-		vmovaps ymm2, [r8+r13] 
+		vmovups ymm2, [r8+r13] 
 		
 		;suma
 		vaddps ymm4,ymm0,ymm2
 		
 		; guarda resultado de vuelta al vector
-		vmovaps [r8+r13], ymm4
+		vmovups [r8+r13], ymm4
 		
 		; mueve parte del vector de datos y a ymm3
-		vmovaps ymm2, [r11+r13] 
+		vmovups ymm2, [r11+r13] 
 
 		; suma 
 		vaddps ymm4,ymm1,ymm3
 	
 		; guarda resultado de vuelta al vector
-		vmovaps [r11+r13],ymm4
+		vmovups [r11+r13],ymm4
 		
 		; aumentar contador
 		inc r12
