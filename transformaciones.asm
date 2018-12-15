@@ -302,7 +302,7 @@ traslacion:
 		vmovups [r8+r13], ymm4
 		
 		; mueve parte del vector de datos y a ymm3
-		vmovups ymm2, [r11+r13] 
+		vmovups ymm3, [r11+r13] 
 
 		; suma 
 		vaddps ymm4,ymm1,ymm3
