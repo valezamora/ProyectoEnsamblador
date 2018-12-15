@@ -44,16 +44,14 @@ transformarImagen:
 
 for1:
 	; obtiene tipo de transformacion 
-
 	mov rax, 12		; guarda un 12 
-	mul rbx				; guarda un 12*i en rax
+	mul rbx			; guarda un 12*i en rax
 	mov r12, rax
 	mov r13, rsi
 	add r13, r12
-	mov rax, [r13]	;el tipo de transformacion se guarda en el espacio (dirTransformaciones+ i*12)
+	xor rax, rax	; limpia rax
+	mov eax, [r13]	;el tipo de transformacion se guarda en el espacio (dirTransformaciones+ i*12)
 	
-	;incrementa contador
-	inc rbx
 	
 	; obtiene parametros
 	
@@ -72,8 +70,8 @@ for1:
 	mov r9, rsi
 	add r9, r12			; direccion del segundo parametro
 	
-	; inicio de la imagen (r8)
-	mov word rax, [rsi]
+	;incrementa contador
+	inc rbx
 	
 	comparacion:
 	
@@ -81,15 +79,15 @@ for1:
 	cmp rax, 0
 	je reflexion
 	cmp rsi, 1
-	;je escalacion
+	je escalacion
 	cmp rax, 2
-	;je traslacion
+	je traslacion
 	cmp rax, 3
-	;je brillo
+	je brillo
 	cmp rax, 4
-	;je negativo
+	je negativo
 	cmp rax, 5
-	;je saturacion
+	je saturacion
 	
 ;test para ver si faltan mas transformaciones	
 testFor1:
@@ -186,11 +184,13 @@ escalacion:
 	
 	; crea vector de x y vector de y para poder hacer las operaciones en paquetes
 	
-	; parametro x: poner el valor de r15  (ymm0)
+	; parametro x: poner el valor de r15 (ymm0)
 	vpbroadcastd ymm0, [r15]
+	vcvtdq2ps ymm0, ymm0		; convertir int a float
 	
-	; parametro y: poner el valor de r9 (ymm1)
+	; parametro y: poner el valor de r9 64 veces (ymm1)
 	vpbroadcastd ymm1, [r9]
+	vcvtdq2ps ymm1, ymm1		; convertir int a float
 	
 	;calcular cantidad de operaciones requeridas 
 	;calcular cantidad de operaciones requeridas 
@@ -263,9 +263,12 @@ traslacion:
 	
 	; parametro x: poner el valor de r15 (ymm0)
 	vpbroadcastd ymm0, [r15]
+	vcvtdq2ps ymm0, ymm0		; convertir int a float
 	
 	; parametro y: poner el valor de r9 64 veces (ymm1)
 	vpbroadcastd ymm1, [r9]
+	vcvtdq2ps ymm1, ymm1		; convertir int a float
+	
 	
 	;calcular cantidad de operaciones requeridas 
 	mov rax, r10
