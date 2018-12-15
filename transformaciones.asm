@@ -78,7 +78,7 @@ for1:
 	;compara rax para saltar a la ejecucion de la transformacion
 	cmp rax, 0
 	je reflexion
-	cmp rsi, 1
+	cmp rax, 1
 	je escalacion
 	cmp rax, 2
 	je traslacion
