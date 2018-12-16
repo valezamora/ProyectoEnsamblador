@@ -44,16 +44,14 @@ transformarImagen:
 
 for1:
 	; obtiene tipo de transformacion 
-
 	mov rax, 12		; guarda un 12 
-	mul rbx				; guarda un 12*i en rax
+	mul rbx			; guarda un 12*i en rax
 	mov r12, rax
 	mov r13, rsi
 	add r13, r12
-	mov rax, [r13]	;el tipo de transformacion se guarda en el espacio (dirTransformaciones+ i*12)
+	xor rax, rax	; limpia rax
+	mov eax, [r13]	;el tipo de transformacion se guarda en el espacio (dirTransformaciones+ i*12)
 	
-	;incrementa contador
-	inc rbx
 	
 	; obtiene parametros
 	
@@ -72,24 +70,24 @@ for1:
 	mov r9, rsi
 	add r9, r12			; direccion del segundo parametro
 	
-	; inicio de la imagen (r8)
-	mov word rax, [rsi]
+	;incrementa contador
+	inc rbx
 	
 	comparacion:
 	
 	;compara rax para saltar a la ejecucion de la transformacion
 	cmp rax, 0
 	je reflexion
-	cmp rsi, 1
-	;je escalacion
+	cmp rax, 1
+	je escalacion
 	cmp rax, 2
-	;je traslacion
+	je traslacion
 	cmp rax, 3
-	;je brillo
+	je brillo
 	cmp rax, 4
-	;je negativo
+	je negativo
 	cmp rax, 5
-	;je saturacion
+	je saturacion
 	
 ;test para ver si faltan mas transformaciones	
 testFor1:
@@ -148,17 +146,17 @@ reflexion:
 	
 	forReflexion:
 		; mueve parte del vector de datos x a ymm0
-		vmovaps ymm0, [r8+r13] 
+		vmovups ymm0, [r8+r13] 
 		;mueve parte del vector de datos y a ymm1
-		vmovaps ymm1, [r11+r13]
+		vmovups ymm1, [r11+r13]
 		
 		; guarda invertidos los puntos
-		vmovaps  [r8+r13], ymm1
-		vmovaps  [r11+r13], ymm0
+		vmovups  [r8+r13], ymm1
+		vmovups  [r11+r13], ymm0
 	
 		; aumentar contador
 		inc r12
-		add r13, 100h		; aumenta la cantidad de bits que ya se utilizaron (256 bits = 8 puntos)
+		add r13, 20h		; aumenta la cantidad de bits que ya se utilizaron (256 bits = 8 puntos)
 	
 	testForReflexion:
 	; compara contador (r12) con cantidad de puntos (rax)
@@ -176,8 +174,11 @@ escalacion:
 	; Se utiliza AVX, se procesan 256 bits a la vez, de 8 en 8 puntos en formato punto flotante de 32 bits.
 	
 	;get inicio de puntos y (r11)
-	mov r11, r10	; cantidad de puntos
-	mov rax, 4
+	mov rax, r10
+	mov r13, 2
+	div r13	
+
+	mov r11, 4
 	mul r11
 	mov r11, rax	;distania del inicio del vector
 	mov r13, r8
@@ -186,13 +187,14 @@ escalacion:
 	
 	; crea vector de x y vector de y para poder hacer las operaciones en paquetes
 	
-	; parametro x: poner el valor de r15  (ymm0)
+	; parametro x: poner el valor de r15 (ymm0)
 	vpbroadcastd ymm0, [r15]
+	vcvtdq2ps ymm0, ymm0		; convertir int a float
 	
-	; parametro y: poner el valor de r9 (ymm1)
+	; parametro y: poner el valor de r9 64 veces (ymm1)
 	vpbroadcastd ymm1, [r9]
+	vcvtdq2ps ymm1, ymm1		; convertir int a float
 	
-	;calcular cantidad de operaciones requeridas 
 	;calcular cantidad de operaciones requeridas 
 	mov rax, r10
 	mov r13, 2
@@ -202,7 +204,6 @@ escalacion:
 	div r13			; (total de puntos en un eje/8)
 	mov r14, rax
 
-	
 	; contador (r12)
 	mov r12, 0
 	mov r13, 0
@@ -214,26 +215,26 @@ escalacion:
 	;ciclo para leer los valores y sumarles el parametro en x y y
 	forEscalacion:
 		; mueve parte del vector de datos x a ymm2
-		vmovaps ymm2,  [r8+r13] 
+		vmovups ymm2,  [r8+r13] 
 		
 		; multiplicacion
 		vmulps ymm4,ymm0,ymm2
 		
 		; guarda resultado de vuelta al vector
-		vmovaps  [r8+r13], ymm4
+		vmovups  [r8+r13], ymm4
 		
 		; mueve parte del vector de datos y a ymm3
-		vmovaps ymm2, [r11+r13] 
+		vmovups ymm2, [r11+r13] 
 
 		; multiplicacion 
 		vmulps ymm4,ymm1,ymm3
 	
 		; guarda resultado de vuelta al vector
-		vmovaps [r11+r13],ymm4
+		vmovups [r11+r13],ymm4
 		
 		; aumentar contador
 		inc r12
-		add r13, 100h		; aumenta la cantidad de bits que ya se utilizaron (256)
+		add r13, 20h		; aumenta la cantidad de bits que ya se utilizaron (256)
 		
 	testForEscalacion:
 		; compara contador (r12) con cantidad de puntos (r14)
@@ -252,10 +253,13 @@ traslacion:
 	; Se utiliza AVX, se procesan 256 bits a la vez, de 8 en 8 puntos en formato punto flotante de 32 bits.
 	
 	;get inicio de puntos y (r11)
-	mov r11, r10	; cantidad de puntos
-	mov rax, 4
+	mov rax, r10
+	mov r13, 2
+	div r13	
+
+	mov r11, 4
 	mul r11
-	mov r11, rax	;distania del inicio del vector
+	mov r11, rax		; distancia del inicio del vector
 	mov r13, r8
 	add r11, r13		; posicion inicial de puntos y
 	
@@ -263,15 +267,17 @@ traslacion:
 	
 	; parametro x: poner el valor de r15 (ymm0)
 	vpbroadcastd ymm0, [r15]
+	vcvtdq2ps ymm0, ymm0		; convertir int a float
 	
 	; parametro y: poner el valor de r9 64 veces (ymm1)
 	vpbroadcastd ymm1, [r9]
+	vcvtdq2ps ymm1, ymm1		; convertir int a float
 	
-	;calcular cantidad de operaciones requeridas 
+	
+	;calcular cantidad de operaciones requeridas (r14)
 	mov rax, r10
 	mov r13, 2
 	div r13			; divide entre 2 el total de coordenadas para tener total de puntos
-	
 	mov r13, 8
 	div r13			; (total de puntos en un eje/8)
 	mov r14, rax
@@ -287,26 +293,26 @@ traslacion:
 	;ciclo para leer los valores y sumarles el parametro en x y y
 	forTraslacion:
 		; mueve parte del vector de datos x a ymm2
-		vmovaps ymm2, [r8+r13] 
+		vmovups ymm2, [r8+r13] 
 		
 		;suma
 		vaddps ymm4,ymm0,ymm2
 		
 		; guarda resultado de vuelta al vector
-		vmovaps [r8+r13], ymm4
+		vmovups [r8+r13], ymm4
 		
 		; mueve parte del vector de datos y a ymm3
-		vmovaps ymm2, [r11+r13] 
+		vmovups ymm3, [r11+r13] 
 
 		; suma 
 		vaddps ymm4,ymm1,ymm3
 	
 		; guarda resultado de vuelta al vector
-		vmovaps [r11+r13],ymm4
+		vmovups [r11+r13],ymm4
 		
 		; aumentar contador
 		inc r12
-		add r13, 100h		; aumenta la cantidad de bits que ya se utilizaron (256)
+		add r13, 20h		; aumenta la cantidad de bits que ya se utilizaron (256)
 		
 	testForTraslacion:
 		; compara contador (r12) con cantidad de puntos (r14)

@@ -1,1 +1,0 @@
-cmd_/home/umu/Desktop/devchar/mymodule2.o := ld -m elf_x86_64  -z max-page-size=0x200000    -r -o /home/umu/Desktop/devchar/mymodule2.o /home/umu/Desktop/devchar/transformaciones.o /home/umu/Desktop/devchar/mymodule2-base.o 

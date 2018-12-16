@@ -15,19 +15,23 @@ MODULE_VERSION("0.3");
 static struct class*  gMatrixClass  = NULL; ///< The device-driver class struct pointer
 static struct device* gMatrixDevice = NULL; ///< The device-driver device struct pointer
 extern void transformarImagen (int transformsQuantity, int* transforms, int imageSize, char * image);
-void tra (int tranformsQuantity, int* transforms,int imageSize,char*image){
+int tra (int tranformsQuantity, int* transforms,int imageSize,char*image){
    
    printk(KERN_INFO "Got %d transforms and %d imageSize\n", tranformsQuantity,imageSize);
    if(!transforms){
       printk(KERN_ALERT "Error\n");
+      return -1;
    }
-   if(transforms[0]<3){
+   int * toPrint = (int*) image;
+   printk (KERN_INFO "EBBChar: Before transform, first values are %d %d %d\n", toPrint [0], toPrint [1], toPrint [2]);
+   if(transforms[0]<3){ // Es vectorial, se trabaja float por float
+      transformarImagen(tranformsQuantity,transforms,imageSize/4,image);
+
+   } else { // Es bitmap, se trabaja byte por byte
       transformarImagen(tranformsQuantity,transforms,imageSize,image);
    }
-   else{
-      transformarImagen(tranformsQuantity,transforms,imageSize*4,image);
-   }
-   
+   printk (KERN_INFO "EBBChar: After transform, first values are %d %d %d\n", toPrint [0], toPrint [1], toPrint [2]);
+   return 0;
 }
 EXPORT_SYMBOL(tra);
 static int __init ebbchar_init(void){

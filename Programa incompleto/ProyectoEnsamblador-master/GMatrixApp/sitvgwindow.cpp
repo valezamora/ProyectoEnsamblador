@@ -146,7 +146,6 @@ void SITVGWindow::sendTransformations()
             float * transformationsAFloat = (float *) transformationsA;
             transformationsAFloat[1] = -15;
             transformationsAFloat[2] = 100;
-            printf("%f %f\n",transformationsA[1],transformationsA[2]);
             //ret = write(fd, (char*)transformations, noOfTransformations*sizeof(int)*3);
             ret = write(fd, (char*)transformationsAFloat, 12);
             //printf("Importante2 : %d\n",ret);

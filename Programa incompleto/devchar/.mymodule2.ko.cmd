@@ -1,1 +1,0 @@
-cmd_/home/umu/Desktop/devchar/mymodule2.ko := ld -r -m elf_x86_64  -z max-page-size=0x200000 -T ./scripts/module-common.lds  --build-id  -o /home/umu/Desktop/devchar/mymodule2.ko /home/umu/Desktop/devchar/mymodule2.o /home/umu/Desktop/devchar/mymodule2.mod.o ;  true
