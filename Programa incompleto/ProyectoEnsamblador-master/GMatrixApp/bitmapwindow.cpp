@@ -105,16 +105,25 @@ void BitmapWindow::enableAllInteractions()
 
 void BitmapWindow::sendTransformations()
 {
+    printf("\n\nHELLO\n\n");
     bool success = false;
 
-    char * colorsWithPadding = nullptr;
-    unsigned cWPSize = 0;
+    //char * colorsWithPadding = nullptr;
+    char colorsWithPadding [32] = {'1','2','3','4','5','6','7','8','9','1','1','1','1','1','1','6','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1'};
+    //unsigned cWPSize = 0;
+    unsigned cWPSize = 32;
     int * transformations = nullptr;
     int noOfTransformations = 0;
 
     this->transImage = this->baseImage->newClone();
-    this->transImage->getDataForTransformation(colorsWithPadding, cWPSize);
-    this->transList.getDataForTransformation(transformations, noOfTransformations);
+    //this->transImage->getDataForTransformation(colorsWithPadding, cWPSize);
+    //this->transList.getDataForTransformation(transformations, noOfTransformations);
+    transformations = new int [3];
+    transformations [0] = 3;
+    transformations [0] = 2;
+    transformations [0] = 1;
+    noOfTransformations = 12;
+
 
     //Send and receive data to and from kernel
     int ret = 0, fd = open("/dev/ebbchar", O_RDWR); // Opens the device with read/write access
@@ -131,7 +140,7 @@ void BitmapWindow::sendTransformations()
             ret = write(fd, (char*)transformations, noOfTransformations*sizeof(Transformation)); // Send the string to the LKM
             if (ret >= 0)
             {
-                ret = read(fd, (char*)colorsWithPadding, cWPSize); // Read the response from the LKM
+                ret = read(fd, colorsWithPadding, cWPSize); // Read the response from the LKM
 
                 if (ret < 0) {
                     perror("Failed to read the message from the device.");
@@ -139,20 +148,24 @@ void BitmapWindow::sendTransformations()
                 else
                 {
                     success = true;
-                    this->transImage->applyTransformations(colorsWithPadding);
+                    //this->transImage->applyTransformations(colorsWithPadding);
                     this->transList.clear();
                 }
             }
         }
     }
-
+    printf("Resultado:\n");
+    for (int i = 0; i < cWPSize; i++){
+        printf ("%c ", colorsWithPadding [i]);
+    }
+    printf("\n");
     if (success)
-            statusBar->showMessage(tr("Transformaciones aplicadas exitosamente."), 5000);
+            statusBar->showMessage(tr("Transformaciones aplicadas exitosamente.\n"), 5000);
     else
-            statusBar->showMessage(tr("Error al comunicarse con el dispositivo."), 5000);
+            statusBar->showMessage(tr("Error al comunicarse con el dispositivo.\n"), 5000);
     ::close(fd);
 
-    delete [] colorsWithPadding;
+    //delete [] colorsWithPadding;
     delete [] transformations;
 }
 

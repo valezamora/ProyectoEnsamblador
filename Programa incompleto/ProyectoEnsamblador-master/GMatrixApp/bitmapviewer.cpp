@@ -99,13 +99,16 @@ void BitmapViewer::applyTransformations(const char * colorsArray)
     int counter = 0;
     for(int i = 0; i < image.height(); ++i) // to get each line
     {
-        QRgb * rgb = (QRgb*)image.scanLine(i); // get line at i
+        //QRgb * rgb = (QRgb*)image.scanLine(i); // get line at i
         for(int j = 0; j < image.width(); ++j) // iterate over each pixel in each line
         {
-            colorsArray[counter++] >> qRed(*rgb);
-            colorsArray[counter++] >> qGreen(*rgb);
-            colorsArray[counter++] >> qBlue(*rgb);
-            ++rgb; // increment rgb to go to the next pixel
+
+            int red = colorsArray [counter++];
+            int green = colorsArray [counter++];
+            int blue = colorsArray [counter++];
+            QColor toInsert = QColor(red,green,blue);
+            image.setPixelColor(i,j,toInsert);
+            //++rgb; // increment rgb to go to the next pixel
         }
     }
     bitmap.convertFromImage(image);

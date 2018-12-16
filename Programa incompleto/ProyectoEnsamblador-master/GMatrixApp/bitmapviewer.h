@@ -9,6 +9,7 @@
 #include <QVector>
 #include <QPainter>
 #include <QtCore>
+#include <QColor>
 #include <QtGui>
 #include <QGraphicsItem>
 
