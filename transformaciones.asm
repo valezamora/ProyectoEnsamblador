@@ -189,11 +189,11 @@ escalacion:
 	
 	; parametro x: poner el valor de r15 (ymm0)
 	vpbroadcastd ymm0, [r15]
-	vcvtdq2ps ymm0, ymm0		; convertir int a float
+	;vcvtdq2ps ymm0, ymm0		; convertir int a float
 	
 	; parametro y: poner el valor de r9 64 veces (ymm1)
 	vpbroadcastd ymm1, [r9]
-	vcvtdq2ps ymm1, ymm1		; convertir int a float
+	;vcvtdq2ps ymm1, ymm1		; convertir int a float
 	
 	;calcular cantidad de operaciones requeridas 
 	mov rax, r10
@@ -267,11 +267,11 @@ traslacion:
 	
 	; parametro x: poner el valor de r15 (ymm0)
 	vpbroadcastd ymm0, [r15]
-	vcvtdq2ps ymm0, ymm0		; convertir int a float
+	;vcvtdq2ps ymm0, ymm0		; convertir int a float
 	
 	; parametro y: poner el valor de r9 64 veces (ymm1)
 	vpbroadcastd ymm1, [r9]
-	vcvtdq2ps ymm1, ymm1		; convertir int a float
+	;vcvtdq2ps ymm1, ymm1		; convertir int a float
 	
 	
 	;calcular cantidad de operaciones requeridas (r14)
