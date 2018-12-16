@@ -87,7 +87,7 @@ for1:
 	cmp rax, 4
 	je negativo
 	cmp rax, 5
-	je saturacion
+	je contraste
 	
 ;test para ver si faltan mas transformaciones	
 testFor1:
@@ -337,27 +337,25 @@ brillo:
 	vpbroadcastb ymm0, [r15]
 	
 	; Ciclo para sumar el vector a todas las entradas 
-		; contador
+	; contador
 	mov r11, 0		; contador
 	mov r12, 0 		; traslacion dentro del vector de pixeles
-	mov rax, r10	; cantidad total de puntos (cada uno de 3 bytes)
-	mov r14, 3
-	mul r14
-	mov r13, 32  	; total de operaciones requeridas 
+	mov rax, r10	; cantidad total de bits
+	mov r13, 256  	; cantidad simultanea  
 	div r13
-	mov r13, rax
+	mov r13, rax	; cantidad total de operaciones requeridas
 	
 	jmp tesForBrillo
 	
 	forBrillo:
 		; Se guarda imagen en ymm1
-		vmovdqa ymm1, [r8+r12]
+		vmovdqu ymm1, [r8+r12]
 		
 		; Se le suma el nivel del cambio en ymm2 (ymm0 + ymm1) (instruccion para 1 byte)
 		vpaddb ymm2, ymm0, ymm1	
 		
 		; Se guarda imagen nuevamente
-		vmovdqa [r8+r12], ymm1
+		vmovdqu [r8+r12], ymm1
 		
 		; aumentar contador
 		inc r11
@@ -380,28 +378,26 @@ negativo:
 	
 	; Ciclo para negativo
 	
-		; contador
+	; contador
 	mov r11, 0		; contador
 	mov r12, 0 		; traslacion dentro del vector de pixeles
-	mov rax, r10	; cantidad total de puntos (cada uno de 3 bytes)
-	mov r14, 3
-	mul r14
-	mov r13, 32  	; total de operaciones requeridas 
+	mov rax, r10	; cantidad total de bits
+	mov r13, 256  	; cantidad simultanea  
 	div r13
-	mov r13, rax
+	mov r13, rax	; cantidad total de operaciones requeridas
 	
 	
 	jmp testForNegativo
 	
 	forNegativo:
 		; Se guarda imagen en ymm1
-		vmovdqa ymm1, [r8+r12]
+		vmovdqu ymm1, [r8+r12]
 		
 		; Se le resta el vector de 255 
 		vpsubb ymm2, ymm0, ymm1
 		
 		; Se guarda imagen nuevamente
-		vmovdqa [r8+r12], ymm2
+		vmovdqu [r8+r12], ymm2
 		
 		; aumentar contador
 		inc r11
@@ -417,7 +413,7 @@ negativo:
 ;--------------------------------------------------------------------------------------------
 	
 ; id = 5
-saturacion:
+contraste:
 	
 	; Ciclo para contraste
 
@@ -451,13 +447,11 @@ saturacion:
 
 	; contador
 	mov r11, 0		; contador
-	mov r12, 0 		; traslacion dentro del vector de pixeles	
-	mov rax, r10	; cantidad total de puntos (cada uno de 3 bytes)
-	mov r14, 3
-	mul r14
-	mov r13, 32  	; total de operaciones requeridas 
+	mov r12, 0 		; traslacion dentro del vector de pixeles
+	mov rax, r10	; cantidad total de bits
+	mov r13, 256  	; cantidad simultanea  
 	div r13
-	mov r13, rax
+	mov r13, rax	; cantidad total de operaciones requeridas
 	
 	
 	
@@ -466,7 +460,7 @@ saturacion:
 	forContraste:
 		
 		; Se guarda imagen en ymm2
-		vmovdqa ymm2, [r8+r12]
+		vmovdqu ymm2, [r8+r12]
 		
 		; Se le resta 128 
 		vpsubb ymm3, ymm2, ymm1		
@@ -478,7 +472,7 @@ saturacion:
 		vpaddb ymm3, ymm2, ymm1
 		
 		; Se guarda imagen nuevamente
-		vmovdqa  [r8+r12], ymm3
+		vmovdqu [r8+r12], ymm3
 		
 		; aumentar contador
 		inc r11
