@@ -355,7 +355,7 @@ brillo:
 		vpaddb ymm2, ymm0, ymm1	
 		
 		; Se guarda imagen nuevamente
-		vmovdqu [r8+r12], ymm1
+		vmovdqu [r8+r12], ymm2
 		
 		; aumentar contador
 		inc r11
@@ -374,7 +374,9 @@ brillo:
 negativo:
 	; Se genera vector que contiene 255 (64 255's) se guarda en ymm0
 	mov r15, 255
-	vpbroadcastb ymm0, byte [r15]
+	push 255
+	vpbroadcastb ymm0, [rsp]
+	pop r15
 	
 	; Ciclo para negativo
 	
