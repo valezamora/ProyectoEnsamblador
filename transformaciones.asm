@@ -419,35 +419,39 @@ contraste:
 	
 	; Ciclo para contraste
 
-	; calculo de FC
+	;calculo de FC
 	xor rax, rax
-	;numerador
+	numerador:
 	mov r11, 259
 	mov rax, 255
 	add rax, [r15]
 	mul r11
 	mov r11, rax
 	
-	;denominador
+	denominador:
 	mov rax, 259
 	sub rax, [r15]
 	mov r12, 255
 	mul r12
 	mov r12, rax
 	
-	;division
+	division:
 	mov rax, r11
 	div r12
-
-
+	
+	generarVector:
+	push rax	;push resultado
 	; Se genera vector que contiene el parametro 
-	vpbroadcastb ymm0, rax
+	vpbroadcastb ymm0, [rsp]
+	pop rax
 	xor rax, rax
 	mov al, 128
-	vpbroadcastb ymm1, rax 
+	push rax
+	vpbroadcastb ymm1, [rsp] 
 	
+	pop rax
 
-	; contador
+	contador:
 	mov r11, 0		; contador
 	mov r12, 0 		; traslacion dentro del vector de pixeles
 	mov rax, r10	; cantidad total de bits
